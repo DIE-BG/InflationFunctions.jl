@@ -1,0 +1,3 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+InflationFunctions = "3d0454e0-948f-4743-b998-4d73da99f8a8"
