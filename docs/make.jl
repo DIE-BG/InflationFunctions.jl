@@ -10,7 +10,7 @@ makedocs(;
     sitename="InflationFunctions.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://DIE-BG.github.io/InflationFunctions.jl",
+        canonical="https://die-bg.github.io/InflationFunctions.jl",
         assets=String[],
     ),
     pages=[
