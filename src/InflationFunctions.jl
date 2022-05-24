@@ -59,6 +59,10 @@ module InflationFunctions
     include("mai/TransversalDistr.jl")
     include("mai/renormalize.jl")
     include("mai/InflationCoreMai.jl")
+    
+    # Funciones de inflación MAI simplificadas
+    export InflationCoreMaiF, InflationCoreMaiG, InflationCoreMaiFP
+    include("mai/InflationCoreMaiMethods.jl")
 
     ## Exclusión dinámica
     export InflationDynamicExclusion
