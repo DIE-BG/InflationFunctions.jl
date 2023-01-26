@@ -394,3 +394,74 @@ function (inflfn::InflationCoreMai)(base::VarCPIBase{T}, method::MaiFP, flp, FLP
 
     mai_m
 end
+
+
+# Función de resumen intermensual para metodología MAI-G con fecha
+function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiG, date::Date) where T
+    # Computar flp y glp, tomando en cuenta observaciones de años completos en
+    # la última base del CountryStructure
+    V_star = _get_vstar(cs[date])
+    W_star = _get_wstar(cs[date])
+    glp = WeightsDistr(V_star, W_star, inflfn.vspace)
+
+    # Obtener distribuciones acumuladas y sus percentiles 
+    GLP = cumsum(glp)
+    q_glp::Vector{T} = quantile(GLP, method.p)
+
+    # Llamar al método de cómputo de inflación intermensual
+    vm_fn = base -> inflfn(base, inflfn.method, glp, GLP, q_glp)
+    vm = mapfoldl(vm_fn, vcat, cs.base)
+    vm
+end
+
+# Función de resumen intermensual para metodología MAI-F con fecha
+function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiF, date::Date) where T
+    # Intuitivamente, las distribuciones de largo plazo podrían computarse más
+    # sencillamente de esta forma. Sin embargo, parece que hay problemas de
+    # precisión en los vectores dispersos al agregar las distribuciones de cada
+    # base de esta manera.
+
+    # flp_bases = ObservationsDistr.(cs.base, Ref(vspace))
+    # glp_bases = WeightsDistr.(cs.base, Ref(vspace))
+    # flp = sum(flp_bases)
+    # glp = sum(glp_bases)
+
+    # Computar flp y glp, tomando en cuenta observaciones de años completos en
+    # la última base del CountryStructure
+    V_star = _get_vstar(cs[date])
+    W_star = _get_wstar(cs[date])
+    flp = ObservationsDistr(V_star, inflfn.vspace)
+    glp = WeightsDistr(V_star, W_star, inflfn.vspace)
+
+    # Obtener distribuciones acumuladas y sus percentiles 
+    FLP = cumsum(flp)
+    GLP = cumsum(glp)
+    # q_glp::Vector{T} = quantile(GLP, method.p)
+    q_flp::Vector{T} = quantile(FLP, method.p)
+
+    # Llamar al método de cómputo de inflación intermensual
+    vm_fn = base -> inflfn(base, inflfn.method, glp, GLP, q_flp)
+    vm = mapfoldl(vm_fn, vcat, cs.base)
+    vm
+end
+
+# Función de resumen intermensual para metodología MAI-FP con fecha
+function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiFP, date::Date) where T
+    # Computar flp, tomando en cuenta observaciones de años completos en
+    # la última base del CountryStructure
+    V_star = _get_vstar(cs[date])
+    flp = ObservationsDistr(V_star, inflfn.vspace)
+
+    # Obtener distribuciones acumuladas y sus percentiles 
+    FLP = cumsum(flp)
+    q_flp::Vector{T} = quantile(FLP, method.p)
+
+    # Llamar al método de cómputo de inflación intermensual
+    vm_fn = base -> inflfn(base, inflfn.method, flp, FLP, q_flp)
+    vm = mapfoldl(vm_fn, vcat, cs.base)
+    vm
+end
+
+function (inflfn::InflationCoreMai)(cs::CountryStructure, ::CPIVarInterm, date::Date)
+    inflfn(cs, CPIVarInterm(), inflfn.method, date)
+end 

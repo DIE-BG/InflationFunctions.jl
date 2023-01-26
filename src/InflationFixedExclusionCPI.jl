@@ -109,4 +109,12 @@ function (inflfn::InflationFixedExclusionCPI)(cs::CountryStructure, ::CPIVarInte
     vm
 end
 
+## CON FECHA 
 
+function (inflfn::InflationFixedExclusionCPI)(base::VarCPIBase{T}, i::Int, date::Date) where T 
+    inflfn(base,i)
+end
+
+function (inflfn::InflationFixedExclusionCPI)(cs::CountryStructure, ::CPIVarInterm, date::Date) where T 
+    inflfn(cs, CPIVarInterm())
+end
