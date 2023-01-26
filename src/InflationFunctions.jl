@@ -10,6 +10,7 @@ module InflationFunctions
     using StatsBase
     using SparseArrays
     using RecipesBase
+    using Dates
 
     ## Métodos a extender 
     import CPIDataBase: measure_name, measure_tag, params

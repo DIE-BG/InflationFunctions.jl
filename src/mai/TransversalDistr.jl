@@ -229,6 +229,19 @@ function WeightsDistr(base::VarCPIBase{T}, vspace) where T
     WeightsDistr(distr, vspace)
 end
 
+## Métodos para generar distribuciones a partir de VarCPIBase y CountryStructure con una fecha Límites
+
+# function ObservationsDistr(base::VarCPIBase{T}, vspace, date::Date) where T
+#     len = length(base.dates[1]:Month(1):date)
+#     new_base = VarCPIBase(base.v[1:len,:], base.w, base.dates[1:len], base.baseindex)
+#     ObservationsDistr(new_base, vspace)
+# end
+
+# function WeightsDistr(base::VarCPIBase{T}, vspace, date::Date) where T
+#     len = length(base.dates[1]:Month(1):date)
+#     new_base = VarCPIBase(base.v[1:len,:], base.w, base.dates[1:len], base.baseindex)
+#     WeightsDistr(new_base, vspace)
+# end
 
 ## RecipesBase
 
