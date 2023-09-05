@@ -1,7 +1,7 @@
 name = "InflationFunctions"
 uuid = "3d0454e0-948f-4743-b998-4d73da99f8a8"
 authors = ["Rodrigo Chang <rrcp777@gmail.com> and contributors"]
-version = "0.3.1"
+version = "0.3.2"
 
 [deps]
 CPIDataBase = "bc2aee9a-d1f8-4cce-8750-9c1afc923989"
@@ -14,8 +14,8 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 [compat]
 CPIDataBase = ">= 0.6"
 RecipesBase = "1"
-StatsBase = "0.33"
-julia = "1.6"
+StatsBase = ">= 0.33"
+julia = ">= 1.6"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
