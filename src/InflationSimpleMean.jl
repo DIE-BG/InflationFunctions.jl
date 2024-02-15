@@ -13,6 +13,13 @@ measure_name(::InflationSimpleMean) = "Media simple interanual"
 
 # Define cómo opera InflationSimpleMean sobre un objeto de tipo VarCPIBase.
 function (inflfn::InflationSimpleMean)(base::VarCPIBase{T}) where T
+    # For the first 11 observations 
+    nobs = size(base.v, 1)
+    if nobs < 11 
+        simpmean = mean(base.v, dims=2)
+        return simpmean
+    end
+
     #Obtener el indice correspondiente a las variaciones intermensuales
     indmat = capitalize(base.v)
     #Cálculo de la variación interanual

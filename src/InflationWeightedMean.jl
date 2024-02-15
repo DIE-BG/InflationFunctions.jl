@@ -13,6 +13,13 @@ measure_name(::InflationWeightedMean) = "Media ponderada interanual"
 
 # Define cómo opera InflationSimpleMean sobre un objeto de tipo VarCPIBase.
 function (inflfn::InflationWeightedMean)(base::VarCPIBase{T}) where T
+    # For the first 11 observations 
+    nobs = size(base.v, 1)
+    if nobs < 11 
+        weightedmean = base.v * base.w / 100
+        return weightedmean
+    end
+
     #Obtener el indice correspondiente a las variaciones intermensuales
     indmat = capitalize(base.v)
     #Cálculo de la variación interanual
