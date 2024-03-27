@@ -52,3 +52,18 @@ measure_tag(esfn::InflationExpSmoothing) = "ES$(round(esfn.alpha, digits=4))_" *
 
 # Inflación constante 
 measure_tag(inflfn::InflationConstant) = "C" * string(round(inflfn.c, digits=2))
+
+
+# Gaussian Smoothing
+function measure_tag(inflfn::InflationGSEq)
+    p = string(round(inflfn.k, digits=2))
+    s1 = string(round(inflfn.s1, digits=2))
+    s2 = string(round(inflfn.s2, digits=2))
+    "GSEq-($p,$s1,$s2)"
+end
+function measure_tag(inflfn::InflationGSWeighted)
+    p = string(round(inflfn.k, digits=2))
+    s1 = string(round(inflfn.s1, digits=2))
+    s2 = string(round(inflfn.s2, digits=2))
+    "GSEq-($p,$s1,$s2)"
+end

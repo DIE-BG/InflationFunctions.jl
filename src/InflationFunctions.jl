@@ -72,6 +72,11 @@ module InflationFunctions
     ## Inflación constante 
     export InflationConstant
     include("InflationConstant.jl")
+
+    ## Gaussian Smoothing 
+    export InflationGSEq, InflationGSWeighted
+    include("InflationGaussianSmoothingEq.jl")
+    include("InflationGaussianSmoothingWeighted.jl")
     
     ## Etiquetas 
     include("inflation_tags.jl")
