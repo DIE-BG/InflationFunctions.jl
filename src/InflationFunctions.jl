@@ -14,8 +14,8 @@ module InflationFunctions
 
     ## Métodos a extender 
     import CPIDataBase: measure_name, measure_tag, params
+    _vecstr(q) = "(" * join(string.(round.(q, digits=2)), ",") * ")"
 
-    
     ## Media simple interanual 
     export InflationSimpleMean
     include("InflationSimpleMean.jl")
@@ -55,15 +55,32 @@ module InflationFunctions
     include("InflationFixedExclusion.jl")
 
     ## Subyacente MAI (muestra ampliada implícitamente)
-    export MaiG, MaiF, MaiFP
-    export InflationCoreMai
-    include("mai/TransversalDistr.jl")
-    include("mai/renormalize.jl")
-    include("mai/InflationCoreMai.jl")
-    
-    # Funciones de inflación MAI simplificadas
+    # Legacy code
+    module LegacyMai
+         
+        using SparseArrays
+        using Statistics
+        using CPIDataBase
+        using RecipesBase
+        using Dates
+
+        # export MaiG, MaiF, MaiFP
+        # export InflationCoreMai           # new efficient algorithms export this
+        include("legacymai/TransversalDistr.jl")
+        include("legacymai/renormalize.jl")
+        include("legacymai/InflationCoreMai.jl")
+
+        # Funciones de inflación MAI simplificadas
+        # export InflationCoreMaiF, InflationCoreMaiG, InflationCoreMaiFP
+        include("legacymai/InflationCoreMaiMethods.jl")
+    end
+
+    ## Efficient MAI algorithms
     export InflationCoreMaiF, InflationCoreMaiG, InflationCoreMaiFP
-    include("mai/InflationCoreMaiMethods.jl")
+    include("mai/maifns.jl")
+    include("mai/InflationCoreMaiG.jl")
+    include("mai/InflationCoreMaiF.jl")
+    include("mai/InflationCoreMaiFP.jl")
 
     ## Exclusión dinámica
     export InflationDynamicExclusion
