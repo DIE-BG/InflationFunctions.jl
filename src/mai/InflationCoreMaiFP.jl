@@ -47,4 +47,4 @@ end
 # Extend utility functions
 CPIDataBase.measure_name(inflfn::InflationCoreMaiFP) = "MAI-FP " * _qstr(inflfn.q)
 CPIDataBase.measure_tag(inflfn::InflationCoreMaiFP) = "MAI-FP " * _qstr(inflfn.q)
-CPIDataBase.params(inflfn::InflationCoreMaiFP) = (inflfn.vlp, inflfn.wlp, inflfn.q, )
+CPIDataBase.params(inflfn::InflationCoreMaiFP) = (inflfn.vlp, inflfn.q, )
