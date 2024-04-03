@@ -5,7 +5,7 @@
     InflationCoreMaiFP(cst::CountryStructure, n::Int)
     InflationCoreMaiFP(vlp::Vector{T}, q::Vector{T})
 
-Defines the core inflation function that uses the MAI-F method.
+Defines the core inflation function that uses the MAI-FP method.
 """
 struct InflationCoreMaiFP{T <: AbstractFloat} <: InflationCoreMai
     vlp::Vector{T}  # historical distribution of monthly price changes
