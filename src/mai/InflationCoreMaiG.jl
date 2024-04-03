@@ -36,16 +36,13 @@ struct InflationCoreMaiG{T <: AbstractFloat} <: InflationCoreMai
     end
 end
 
+# Method to define Core Mai function with equidistant quantiles
+InflationCoreMaiG(cst::CountryStructure, n::Int) = InflationCoreMaiG(cst, collect((1/n):(1/n):((n-1)/n)))
 # Define method to receive a CountryStructure and extract vlp and wlp
+InflationCoreMaiG(cst::CountryStructure, q::AbstractVector) = InflationCoreMaiG(cst, collect(q))
 function InflationCoreMaiG(cst::CountryStructure, q::Vector{<:AbstractFloat})
     vlp, wlp = historical_distr(cst)
     InflationCoreMaiG(vlp, wlp, q)
-end
-
-# Method to define Core Mai function with equidistant quantiles
-function InflationCoreMaiG(cst::CountryStructure, n::Int)
-    q = collect((1/n):(1/n):((n-1)/n))
-    InflationCoreMaiG(cst, q)
 end
 
 # Monthly price changes computed by this method

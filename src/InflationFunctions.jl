@@ -81,6 +81,9 @@ module InflationFunctions
     include("mai/InflationCoreMaiG.jl")
     include("mai/InflationCoreMaiF.jl")
     include("mai/InflationCoreMaiFP.jl")
+    # Support for legacy instantiation methods
+    export InflationCoreMai, MaiFP, MaiF, MaiG
+    include("mai/InflationCoreMai.jl")
 
     ## Exclusión dinámica
     export InflationDynamicExclusion
