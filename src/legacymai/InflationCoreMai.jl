@@ -27,13 +27,13 @@ cuantil 0 y 1, respectivamente.
 ## Ejemplos 
 
 1. Utilizar los quintiles como puntos de referencia para normalización 
-```jldoctest 
+```julia-repl 
 julia> method = MaiG(5)
 MaiG{StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}}}(5, 0.0:0.2:1.0)
 ```
 
 2. Utilizar tres segmentos de normalización, en el primer y tercer cuartil: 
-```jldoctest 
+```julia-repl 
 julia> method = MaiG([0, 0.25, 0.75, 1])
 MaiG{Vector{Float64}}(3, [0.0, 0.25, 0.75, 1.0])
 ```
@@ -68,13 +68,13 @@ cuantil 0 y 1, respectivamente.
 ## Ejemplos 
 
 1. Utilizar los quintiles como puntos de referencia para normalización 
-```jldoctest 
+```julia-repl 
 julia> method = MaiF(5)
 MaiF{StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}}}(5, 0.0:0.2:1.0)
 ```
 
 2. Utilizar tres segmentos de normalización, en el primer y tercer cuartil: 
-```jldoctest 
+```julia-repl 
 julia> method = MaiF([0, 0.25, 0.75, 1])
 MaiF{Vector{Float64}}(3, [0.0, 0.25, 0.75, 1.0])
 ```
@@ -109,13 +109,13 @@ cuantil 0 y 1, respectivamente.
 ## Ejemplos 
 
 1. Utilizar los quintiles como puntos de referencia para normalización 
-```jldoctest 
+```julia-repl 
 julia> method = MaiFP(5)
 MaiFP{StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}}}(5, 0.0:0.2:1.0)
 ```
 
 2. Utilizar tres segmentos de normalización, en el primer y tercer cuartil: 
-```jldoctest 
+```julia-repl 
 julia> method = MaiFP([0, 0.25, 0.75, 1])
 MaiFP{Vector{Float64}}(3, [0.0, 0.25, 0.75, 1.0])
 ```
