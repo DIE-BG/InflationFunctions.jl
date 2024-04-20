@@ -42,9 +42,9 @@ function (inflfn::InflationGSWeighted)(base::VarCPIBase{T}) where T
     n = items(base)
 
     # Standard deviation
-    s(x,p) = x <= p ? s1*n : s2*n 
+    s(x,p) = x <= p ? 100s1 : 100s2 
     # Gaussian smoothing function around p
-    f(x,p) = exp(-(x-p)^2/s(x,p)^2) 
+    f(x,p) = exp(-abs((x-p) / s(x,p))^3) 
 
     # For every t, we sort and smooth the weights to compute the summary
     Threads.@threads for i in 1:periods(base)
