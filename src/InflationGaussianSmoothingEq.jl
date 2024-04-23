@@ -21,10 +21,11 @@ Base.@kwdef struct InflationGSEq <: InflationFunction
     r::Int
 end
 
+_validate_param(x::Real) = x > 1 ? x / 100 : x
 InflationGSEq(k::Real, s1::Real,s2::Real, r::Int=2) = InflationGSEq(
-    k = Float32(k), 
-    s1 = Float32(s1), 
-    s2 = Float32(s2),
+    k = Float32(_validate_param(k)), 
+    s1 = Float32(_validate_param(s1)), 
+    s2 = Float32(_validate_param(s2)),
     r = r,
 )
 
