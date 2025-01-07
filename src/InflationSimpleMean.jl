@@ -15,7 +15,7 @@ measure_name(::InflationSimpleMean) = "Media simple interanual"
 function (inflfn::InflationSimpleMean)(base::VarCPIBase{T}) where T
     # For the first 11 observations 
     nobs = size(base.v, 1)
-    if nobs < 11 
+    if nobs < 12 
         simpmean = mean(base.v, dims=2)
         return simpmean
     end

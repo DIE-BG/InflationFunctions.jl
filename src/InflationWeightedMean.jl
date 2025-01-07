@@ -15,7 +15,7 @@ measure_name(::InflationWeightedMean) = "Media ponderada interanual"
 function (inflfn::InflationWeightedMean)(base::VarCPIBase{T}) where T
     # For the first 11 observations 
     nobs = size(base.v, 1)
-    if nobs < 11 
+    if nobs < 12 
         weightedmean = base.v * base.w / 100
         return weightedmean
     end
