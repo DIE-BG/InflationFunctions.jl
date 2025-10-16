@@ -9,7 +9,7 @@ Defines the core inflation function that uses the MAI-F method.
 """
 struct InflationCoreMaiF{T <: AbstractFloat} <: InflationCoreMai
     vlp::Vector{T}  # historical distribution of monthly price changes
-    wlp::Vector{T}  # weights vector 
+    wlp::Vector{T}  # weights vector
     q::Vector{T}    # quantiles used to perform the reweighing by segments
     vqlp::Vector{T} # quantiles monthly price changes of historical distribution
 
@@ -20,6 +20,10 @@ struct InflationCoreMaiF{T <: AbstractFloat} <: InflationCoreMai
         # Check q
         issorted(q) || error("Quantile vector should be ordered")
         all(0 .<= q .<= 1) || error("Quantile vector shuld have entries between 0 and 1")
+        #Check that there are more than two segments
+        length(filter(x -> x >= 0.01 && x <= 0.99, q)) >= 2 ||
+            error("There should be at least three segments (i.e., length of quantiles vector should be at least 3)")
+
 
         # Sort vlp and glp accordingly
         o = sortperm(vlp)
@@ -28,28 +32,28 @@ struct InflationCoreMaiF{T <: AbstractFloat} <: InflationCoreMai
 
         F = eltype(vlp)
         nq = convert.(F, q)
-        (iszero(first(nq)) && isone(last(nq))) && (nq = nq[2:end-1])
+        (iszero(first(nq)) && isone(last(nq))) && (nq = nq[2:(end - 1)])
         vqlp = quantile(vlp, aweights(wlp), nq)
-        new{F}(vlp, wlp, nq, vqlp)
+        return new{F}(vlp, wlp, nq, vqlp)
     end
 end
 
 # Method to define Core Mai function with equidistant quantiles
-InflationCoreMaiF(cst::CountryStructure, n::Int) = InflationCoreMaiF(cst, collect((1/n):(1/n):((n-1)/n)))
+InflationCoreMaiF(cst::CountryStructure, n::Int) = InflationCoreMaiF(cst, collect((1 / n):(1 / n):((n - 1) / n)))
 # Define method to receive a CountryStructure and extract vlp and wlp
 InflationCoreMaiF(cst::CountryStructure, q::AbstractVector) = InflationCoreMaiF(cst, collect(q))
 function InflationCoreMaiF(cst::CountryStructure, q::Vector{<:AbstractFloat})
     vlp, wlp = historical_distr(cst)
-    InflationCoreMaiF(vlp, wlp, q)
+    return InflationCoreMaiF(vlp, wlp, q)
 end
 
 # Monthly price changes computed by this method
-function (inflfn::InflationCoreMaiF)(base::VarCPIBase{T}) where T
+function (inflfn::InflationCoreMaiF)(base::VarCPIBase{T}) where {T}
     mai_f_mm = _mai_f_mm(base, inflfn.q, inflfn.vlp, inflfn.wlp)
-    mai_f_mm
+    return mai_f_mm
 end
 
 # Extend utility functions
-CPIDataBase.measure_name(inflfn::InflationCoreMaiF) = "MAI-F " * _qstr(inflfn.q)
-CPIDataBase.measure_tag(inflfn::InflationCoreMaiF) = "MAI-F " * _qstr(inflfn.q)
-CPIDataBase.params(inflfn::InflationCoreMaiF) = (inflfn.vlp, inflfn.wlp, inflfn.q, )
+CPIDataBase.measure_name(inflfn::InflationCoreMaiF) = "MAI-F " * _vecstr(inflfn.q)
+CPIDataBase.measure_tag(inflfn::InflationCoreMaiF) = "MAI-F " * _vecstr(inflfn.q)
+CPIDataBase.params(inflfn::InflationCoreMaiF) = (inflfn.vlp, inflfn.wlp, inflfn.q)
