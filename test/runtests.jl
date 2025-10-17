@@ -178,6 +178,76 @@ end
     @test all(traj_infl .≈ 0)
 end
 
+@testset "InflationGaussianSmoothingEq" begin
+    # Instantiate a type
+    gaussSmoothEqInfl = InflationGSEq(50.0, 0.5, 0.5, 2)
+    @test gaussSmoothEqInfl isa InflationGSEq
+
+    # Test that the method to get its name is defined
+    @test measure_name(gaussSmoothEqInfl) isa String
+    @test measure_tag(gaussSmoothEqInfl) isa String
+
+    # Test with CPI bases with zero month-to-month variations.
+
+    zero_base = getzerobase()
+    m_traj_infl = gaussSmoothEqInfl(zero_base)
+    @test all(m_traj_infl .≈ 0)
+
+    # Get a UniformCountryStructure with two bases and all
+    # month-to-month variations equal to zero
+    zero_cst = getzerocountryst()
+    traj_infl = gaussSmoothEqInfl(zero_cst)
+
+    # Test that the inflation trajectory is longer than the month-to-month summary
+    @test length(traj_infl) > length(m_traj_infl)
+
+    # Test that the inflation trajectory is equal to zero
+    @test all(traj_infl .≈ 0)
+
+    # Test with CPI bases with Guatemalan data
+    base_gt = GT00
+    cst_gt = GTDATA24
+
+    @test gaussSmoothEqInfl(base_gt) isa AbstractVector
+    @test gaussSmoothEqInfl(cst_gt) isa AbstractVector
+end
+
+
+@testset "InflationGaussianSmoothingWeighted" begin
+    # Instantiate a type
+    gaussSmoothWeighInfl = InflationGSWeighted(50.0, 0.5, 0.5, 2)
+    @test gaussSmoothWeighInfl isa InflationGSWeighted
+
+    # Test that the method to get its name is defined
+    @test measure_name(gaussSmoothWeighInfl) isa String
+    @test measure_tag(gaussSmoothWeighInfl) isa String
+
+    # Test with CPI bases with zero month-to-month variations.
+
+    zero_base = getzerobase()
+    m_traj_infl = gaussSmoothWeighInfl(zero_base)
+    @test all(m_traj_infl .≈ 0)
+
+    # Get a UniformCountryStructure with two bases and all
+    # month-to-month variations equal to zero
+    zero_cst = getzerocountryst()
+    traj_infl = gaussSmoothWeighInfl(zero_cst)
+
+    # Test that the inflation trajectory is longer than the month-to-month summary
+    @test length(traj_infl) > length(m_traj_infl)
+
+    # Test that the inflation trajectory is equal to zero
+    @test all(traj_infl .≈ 0)
+
+    # Test with CPI bases with Guatemalan data
+    base_gt = GT00
+    cst_gt = GTDATA24
+
+    @test gaussSmoothWeighInfl(base_gt) isa AbstractVector
+    @test gaussSmoothWeighInfl(cst_gt) isa AbstractVector
+    # Test that legacy MAI code and new MAI code give the same results
+end
+
 # Pruebas para Inflación subyacente MAI (muestra ampliada implícitamente)
 
 @testset "InflationCoreMaiG" begin
@@ -288,8 +358,6 @@ end
 end
 
 
-# Test that legacy MAI code and new MAI code give the same results
-
 @testset "InflationMAI New vrs.Legacy Code" begin
 
     using InflationFunctions.LegacyMai
@@ -298,33 +366,42 @@ end
     inflmaig_legacy = InflationFunctions.LegacyMai.InflationCoreMaiG(5)
 
     m_traj_inflMaiG_legacy = inflmaig_legacy(GTDATA)
+    m_traj_inflMaiG_legacy_23 = inflmaig_legacy(GTDATA23)
     m_traj_inflMaiG_legacy_24 = inflmaig_legacy(GTDATA24)
+
 
     # Test MAI-G with new code
     inflmaig_new = InflationCoreMaiG(GTDATA, 5)
+    inflmaig_new_23 = InflationCoreMaiG(GTDATA23, 5)
     inflmaig_new_24 = InflationCoreMaiG(GTDATA24, 5)
 
     m_traj_inflMaiG_new = inflmaig_new(GTDATA)
+    m_traj_inflMaiG_new_23 = inflmaig_new_23(GTDATA23)
     m_traj_inflMaiG_new_24 = inflmaig_new_24(GTDATA24)
 
-    @test mean(abs.(m_traj_inflMaiG_legacy - m_traj_inflMaiG_new)) < 0.1
-    @test mean(abs.(m_traj_inflMaiG_legacy_24 - m_traj_inflMaiG_new_24)) < 0.1
+    @test maximum(abs.(m_traj_inflMaiG_legacy - m_traj_inflMaiG_new)) < 0.1
+    @test minimum(abs.(m_traj_inflMaiG_legacy_23 - m_traj_inflMaiG_new_23)) < 0.1
+    @test maximum(abs.(m_traj_inflMaiG_legacy_24 - m_traj_inflMaiG_new_24)) < 0.1
 
     ## Test MAI-F with legacy code and new code
 
     inflMaiF_legacy = InflationFunctions.LegacyMai.InflationCoreMaiF(5)
 
     m_traj_inflMaiF_legacy = inflMaiF_legacy(GTDATA)
+    m_traj_inflMaiF_legacy_23 = inflMaiF_legacy(GTDATA23)
     m_traj_inflMaiF_legacy_24 = inflMaiF_legacy(GTDATA24)
 
     # Test MAI-G with new code
     inflMaiF_new = InflationCoreMaiF(GTDATA, 5)
+    inflMaiF_new_23 = InflationCoreMaiF(GTDATA23, 5)
     inflMaiF_new_24 = InflationCoreMaiF(GTDATA24, 5)
 
     m_traj_inflMaiF_new = inflMaiF_new(GTDATA)
+    m_traj_inflMaiF_new_23 = inflMaiF_new_23(GTDATA23)
     m_traj_inflMaiF_new_24 = inflMaiF_new_24(GTDATA24)
 
-    @test mean(abs.(m_traj_inflMaiF_legacy - m_traj_inflMaiF_new)) < 0.1
+    @test maximum(abs.(m_traj_inflMaiF_legacy - m_traj_inflMaiF_new)) < 0.1
+    @test mean(abs.(m_traj_inflMaiF_legacy_23 - m_traj_inflMaiF_new_23)) < 0.1
     @test mean(abs.(m_traj_inflMaiF_legacy_24 - m_traj_inflMaiF_new_24)) < 0.1
 
     ## Test MAI-FP with legacy code and new code
@@ -332,16 +409,20 @@ end
     inflMaiFP_legacy = InflationFunctions.LegacyMai.InflationCoreMaiFP(5)
 
     m_traj_inflMaiFP_legacy = inflMaiFP_legacy(GTDATA)
+    m_traj_inflMaiFP_legacy_23 = inflMaiFP_legacy(GTDATA23)
     m_traj_inflMaiFP_legacy_24 = inflMaiFP_legacy(GTDATA24)
 
     # Test MAI-G with new code
     inflMaiFP_new = InflationCoreMaiFP(GTDATA, 5)
+    inflMaiFP_new_23 = InflationCoreMaiFP(GTDATA23, 5)
     inflMaiFP_new_24 = InflationCoreMaiFP(GTDATA24, 5)
 
     m_traj_inflMaiFP_new = inflMaiFP_new(GTDATA)
+    m_traj_inflMaiFP_new_23 = inflMaiFP_new_23(GTDATA23)
     m_traj_inflMaiFP_new_24 = inflMaiFP_new_24(GTDATA24)
 
-    @test mean(abs.(m_traj_inflMaiFP_legacy - m_traj_inflMaiFP_new)) < 0.1
+    @test maximum(abs.(m_traj_inflMaiFP_legacy - m_traj_inflMaiFP_new)) < 0.1
+    @test mean(abs.(m_traj_inflMaiFP_legacy_23 - m_traj_inflMaiFP_new_23)) < 0.1
     @test mean(abs.(m_traj_inflMaiFP_legacy_24 - m_traj_inflMaiFP_new_24)) < 0.1
 
 

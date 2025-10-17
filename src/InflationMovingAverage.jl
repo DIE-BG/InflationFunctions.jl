@@ -18,8 +18,8 @@ struct InflationMovingAverage{F <: InflationFunction} <: InflationFunction
     periods::Int
 end
 
-# 2. Extender el método de nombre 
-measure_name(mafn::InflationMovingAverage) = "Promedios Móvil de $(mafn.periods) períodos de " * measure_name(mafn.inflfn)
+# 2. Extender el método de nombre
+measure_name(mafn::InflationMovingAverage) = "Moving Average of $(mafn.periods) periods of" * measure_name(mafn.inflfn)
 
 # Método que opera sobre CountryStructure: computa la trayectoria de inflación
 # con la función inflfn y luego computa el promedio móvil de k períodos
@@ -28,7 +28,7 @@ function (mafn::InflationMovingAverage)(cs::CountryStructure)
     # Cómputo usual de inflación
     tray_infl = mafn.inflfn(cs)
 
-    # Algoritmo de promedio móvil 
+    # Algoritmo de promedio móvil
     k = mafn.periods
     k == 1 && return tray_infl
 
@@ -36,7 +36,7 @@ function (mafn::InflationMovingAverage)(cs::CountryStructure)
     ma_tray_infl = moving_average(tray_infl, k)
 
     # Devolver la trayectoria de inflación
-    ma_tray_infl
+    return ma_tray_infl
 end
 
 # Actualmente, se define el resumen intermensual por el obtenido con la función
@@ -49,16 +49,16 @@ end
 # end
 
 # Función para computar el promedio móvil de la serie `v` con `k` períodos. Esta
-# función modifica los elementos de `v` con el promedio móvil. 
+# función modifica los elementos de `v` con el promedio móvil.
 function moving_average(v, k)
     ma = similar(v)
     ma[1] = v[1]
-    for j = 2:k-1
+    for j in 2:(k - 1)
         ma[j] = mean(@view v[1:j])
     end
-    for t = k:length(v)
-        ma[t] = mean(@view v[t-k+1:t])
-    end    
+    for t in k:length(v)
+        ma[t] = mean(@view v[(t - k + 1):t])
+    end
 
-    ma
-end 
+    return ma
+end

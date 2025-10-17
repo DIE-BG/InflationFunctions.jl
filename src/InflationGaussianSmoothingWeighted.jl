@@ -1,5 +1,3 @@
-
-
 """
     InflationGSWeighted <: InflationFunction
     InflationGSWeighted(k, s1, s2)
@@ -19,57 +17,57 @@ Base.@kwdef struct InflationGSWeighted <: InflationFunction
     s2::Float32
 end
 
-InflationGSWeighted(k::Real, s1::Real,s2::Real) = InflationGSWeighted(
-    k = Float32(k), 
-    s1 = Float32(s1), 
+InflationGSWeighted(k::Real, s1::Real, s2::Real) = InflationGSWeighted(
+    k = Float32(k),
+    s1 = Float32(s1),
     s2 = Float32(s2)
 )
 
 function InflationGSWeighted(params::Vector{<:Real})
     length(params) != 3 && error("Expected 3 parameters")
-    InflationGSWeighted(convert.(Float32, params))
+    return InflationGSWeighted(convert.(Float32, params))
 end
 
-function (inflfn::InflationGSWeighted)(base::VarCPIBase{T}) where T     
+function (inflfn::InflationGSWeighted)(base::VarCPIBase{T}) where {T}
     s1 = inflfn.s1
     s2 = inflfn.s2
-    k = inflfn.k 
+    k = inflfn.k
 
-    # summary monthly inflation 
-    vm = Vector{T}(undef, periods(base)) 
+    # summary monthly inflation
+    vm = Vector{T}(undef, periods(base))
 
     # p is the index of the desired quantile
     n = items(base)
 
     # Standard deviation
-    s(x,p) = x <= p ? s1*n : s2*n 
+    s(x, p) = x <= p ? s1 * n : s2 * n
     # Gaussian smoothing function around p
-    f(x,p) = exp(-(x-p)^2/s(x,p)^2) 
+    f(x, p) = exp(-(x - p)^2 / s(x, p)^2)
 
     # For every t, we sort and smooth the weights to compute the summary
     Threads.@threads for i in 1:periods(base)
         v = @view base.v[i, :]
-        w = base.w 
+        w = base.w
 
         o = sortperm(v)
         vo = v[o]
         wo = w[o]
-        
+
         p = findfirst(>=(100k), cumsum(wo))
 
-        # Apply smoothing while computing the summary 
+        # Apply smoothing while computing the summary
         cnorm = sum(wo[j] * f(j, p) for j in 1:n)
-        @inbounds vm[i] = sum(vo[j] * wo[j] * f(j, p) for j in 1:n) / cnorm 
+        @inbounds vm[i] = sum(vo[j] * wo[j] * f(j, p) for j in 1:n) / cnorm
     end
 
-    vm
+    return vm
 end
 
-function measure_name(inflfn::InflationGSWeighted) 
-    p = string(round(inflfn.k, digits=2))
-    s1 = string(round(inflfn.s1, digits=2))
-    s2 = string(round(inflfn.s2, digits=2))
-    "Suavizamiento Gausiano Ponderado ($p, $s1, $s2)"
+function measure_name(inflfn::InflationGSWeighted)
+    p = string(round(inflfn.k, digits = 2))
+    s1 = string(round(inflfn.s1, digits = 2))
+    s2 = string(round(inflfn.s2, digits = 2))
+    return "Weighted Gaussian Smoothing ($p, $s1, $s2)"
 end
 
 CPIDataBase.params(inflfn::InflationGSWeighted) = (inflfn.k, inflfn.s1, inflfn.s2)
