@@ -45,7 +45,6 @@ function (inflfn::InflationGSEq)(base::VarCPIBase{T}) where {T}
     s(x, p) = x <= p ? s1 * n : s2 * n
     # Gaussian smoothing function around p
     f(x, p) = exp(-(x - p)^2 / s(x, p)^2)
-
     # For every t, we sort and smooth the weights to compute the summary
     Threads.@threads for i in 1:periods(base)
         v = @view base.v[i, :]
@@ -67,5 +66,15 @@ function measure_name(inflfn::InflationGSEq)
     s2 = string(round(inflfn.s2, digits = 2))
     return "Equally Weighted Gaussian Smoothing ($p, $s1, $s2)"
 end
+
+# Gaussian Smoothing
+function measure_tag(inflfn::InflationGSEq)
+    p = string(round(inflfn.k, digits = 2))
+    s1 = string(round(inflfn.s1, digits = 2))
+    s2 = string(round(inflfn.s2, digits = 2))
+    return "EqGS-($p,$s1,$s2)"
+    #    return "EQGS-$p-$s1-$s2
+end
+
 
 CPIDataBase.params(inflfn::InflationGSEq) = (inflfn.k, inflfn.s1, inflfn.s2)

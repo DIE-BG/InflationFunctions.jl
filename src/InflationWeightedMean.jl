@@ -11,6 +11,9 @@ end
 # 2. Extender el método de nombre
 measure_name(::InflationWeightedMean) = "Interannual Weighted Mean"
 
+#tag
+measure_tag(::InflationWeightedMean) = "WM"
+
 # Define cómo opera InflationSimpleMean sobre un objeto de tipo VarCPIBase.
 function (inflfn::InflationWeightedMean)(base::VarCPIBase{T}) where {T}
     # For the first 11 observations

@@ -14,7 +14,11 @@ InflationTotalRebaseCPI(period::Int) = InflationTotalRebaseCPI(period, 0)
 
 # Nombre de la medida
 measure_name(inflfn::InflationTotalRebaseCPI) =
-    "CPI interannual variation with synthetic base changes ($(inflfn.period), $(inflfn.maxchanges))"
+    "CPI Interannual Variation with Synthetic Base Changes ($(inflfn.period), $(inflfn.maxchanges))"
+
+#tag
+measure_tag(inflfn::InflationTotalRebaseCPI) = "TRB-($(inflfn.period),$(inflfn.maxchanges))"
+
 
 # Parámetros
 params(totalrebasefn::InflationTotalRebaseCPI) = (totalrebasefn.period,)

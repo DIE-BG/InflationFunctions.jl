@@ -87,6 +87,10 @@ julia> measure_name(percfn)
 ```
 """
 measure_name(inflfn::InflationPercentileWeighted) = "Weighted Percentile" * string(round(100inflfn.k, digits = 2))
+# tag
+measure_tag(inflfn::InflationPercentileWeighted) = "WPer-" * string(round(100inflfn.k, digits = 2))
+#measure_tag(inflfn::InflationPercentileWeighted) = "WPER-" * string(round(100inflfn.k, digits=2))
+
 
 # Parámetro de la función de inflación
 params(inflfn::InflationPercentileWeighted) = (inflfn.k,)

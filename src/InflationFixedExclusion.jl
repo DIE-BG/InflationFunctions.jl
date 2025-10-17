@@ -42,6 +42,9 @@ InflationFixedExclusion(v_exc...) = InflationFixedExclusion(v_exc)
 
 # Extender el método de nombre y de tag
 measure_name(inflfn::InflationFixedExclusion) = "Fixed Exclusion of basic expenses " * string(map(length, inflfn.v_exc))
+#tag
+measure_tag(inflfn::InflationFixedExclusion) = "FxEx-" * string(map(length, inflfn.v_exc))
+#measure_tag(inflfn::InflationFixedExclusion) = "FXEX-" * string(map(length, inflfn.v_exc))
 
 # Método para obtener parámetros
 params(inflfn::InflationFixedExclusion) = inflfn.v_exc

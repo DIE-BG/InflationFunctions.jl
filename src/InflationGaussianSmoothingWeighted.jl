@@ -62,12 +62,21 @@ function (inflfn::InflationGSWeighted)(base::VarCPIBase{T}) where {T}
 
     return vm
 end
-
+#Name of measure
 function measure_name(inflfn::InflationGSWeighted)
     p = string(round(inflfn.k, digits = 2))
     s1 = string(round(inflfn.s1, digits = 2))
     s2 = string(round(inflfn.s2, digits = 2))
     return "Weighted Gaussian Smoothing ($p, $s1, $s2)"
+end
+
+#tag
+
+function measure_tag(inflfn::InflationGSWeighted)
+    p = string(round(inflfn.k, digits = 2))
+    s1 = string(round(inflfn.s1, digits = 2))
+    s2 = string(round(inflfn.s2, digits = 2))
+    return "WGS-($p,$s1,$s2)"
 end
 
 CPIDataBase.params(inflfn::InflationGSWeighted) = (inflfn.k, inflfn.s1, inflfn.s2)

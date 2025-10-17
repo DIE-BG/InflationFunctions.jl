@@ -22,6 +22,10 @@ end
 
 # 2. Extender el método de nombre
 measure_name(esfn::InflationExpSmoothing) = "Smoothing Exponential with parameter $(round(esfn.alpha, digits = 4)) of " * measure_name(esfn.inflfn)
+#tag
+measure_tag(esfn::InflationExpSmoothing) = "ES$(round(esfn.alpha, digits = 4))_" * measure_tag(esfn.inflfn)
+
+
 # Función de parámetros
 CPIDataBase.params(esfn::InflationExpSmoothing) = (esfn.alpha,)
 

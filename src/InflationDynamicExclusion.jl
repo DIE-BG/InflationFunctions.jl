@@ -77,6 +77,16 @@ function CPIDataBase.measure_name(inflfn::InflationDynamicExclusion)
     )
     return "Dynamic exclusion inflation ($(round_lower_factor), $(round_upper_factor))"
 end
+#tag
+function CPIDataBase.measure_tag(inflfn::InflationDynamicExclusion)
+    round_lower_factor, round_upper_factor = string.(
+        round.(
+            [inflfn.lower_factor, inflfn.upper_factor], digits = 2
+        )
+    )
+    return "DynEx($(round_lower_factor),$(round_upper_factor))"
+end
+
 
 """
     measure_tag(inflfn::InflationDynamicExclusion)

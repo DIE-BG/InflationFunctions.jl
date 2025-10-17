@@ -76,6 +76,9 @@ InflationFixedExclusionCPI(v_exc...) = InflationFixedExclusionCPI(v_exc)
 # Extender el método de nombre y de tag
 measure_name(inflfn::InflationFixedExclusionCPI) = "Fixed Exclusion of CPI basic expenses  " * string(map(length, inflfn.v_exc))
 
+#tag
+measure_tag(inflfn::InflationFixedExclusionCPI) = "FxExCPI-" * string(map(length, inflfn.v_exc))
+
 # Método para obtener parámetros
 params(inflfn::InflationFixedExclusionCPI) = inflfn.v_exc
 

@@ -20,6 +20,8 @@ end
 
 # 2. Extender el método de nombre
 measure_name(mafn::InflationMovingAverage) = "Moving Average of $(mafn.periods) periods of" * measure_name(mafn.inflfn)
+#tag
+measure_tag(mafn::InflationMovingAverage) = "MA$(mafn.periods)_" * measure_tag(mafn.inflfn)
 
 # Método que opera sobre CountryStructure: computa la trayectoria de inflación
 # con la función inflfn y luego computa el promedio móvil de k períodos

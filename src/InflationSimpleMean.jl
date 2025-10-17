@@ -11,6 +11,9 @@ end
 # 2. Extender el método de nombre
 measure_name(::InflationSimpleMean) = "Interannual Simple Mean"
 
+# Tag for inflation measure
+measure_tag(::InflationSimpleMean) = "SM"
+
 # Define cómo opera InflationSimpleMean sobre un objeto de tipo VarCPIBase.
 function (inflfn::InflationSimpleMean)(base::VarCPIBase{T}) where {T}
     # For the first 11 observations

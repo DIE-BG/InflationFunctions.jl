@@ -215,7 +215,7 @@ end
 
 @testset "InflationGaussianSmoothingWeighted" begin
     # Instantiate a type
-    gaussSmoothWeighInfl = InflationGSWeighted(50.0, 0.5, 0.5, 2)
+    gaussSmoothWeighInfl = InflationGSWeighted(0.5, 0.5, 0.5, 2)
     @test gaussSmoothWeighInfl isa InflationGSWeighted
 
     # Test that the method to get its name is defined
@@ -380,7 +380,7 @@ end
     m_traj_inflMaiG_new_24 = inflmaig_new_24(GTDATA24)
 
     @test maximum(abs.(m_traj_inflMaiG_legacy - m_traj_inflMaiG_new)) < 0.1
-    @test minimum(abs.(m_traj_inflMaiG_legacy_23 - m_traj_inflMaiG_new_23)) < 0.1
+    @test maximum(abs.(m_traj_inflMaiG_legacy_23 - m_traj_inflMaiG_new_23)) < 0.1
     @test maximum(abs.(m_traj_inflMaiG_legacy_24 - m_traj_inflMaiG_new_24)) < 0.1
 
     ## Test MAI-F with legacy code and new code
@@ -401,8 +401,8 @@ end
     m_traj_inflMaiF_new_24 = inflMaiF_new_24(GTDATA24)
 
     @test maximum(abs.(m_traj_inflMaiF_legacy - m_traj_inflMaiF_new)) < 0.1
-    @test mean(abs.(m_traj_inflMaiF_legacy_23 - m_traj_inflMaiF_new_23)) < 0.1
-    @test mean(abs.(m_traj_inflMaiF_legacy_24 - m_traj_inflMaiF_new_24)) < 0.1
+    @test maximum(abs.(m_traj_inflMaiF_legacy_23 - m_traj_inflMaiF_new_23)) < 0.1
+    @test maximum(abs.(m_traj_inflMaiF_legacy_24 - m_traj_inflMaiF_new_24)) < 0.1
 
     ## Test MAI-FP with legacy code and new code
 
@@ -422,8 +422,8 @@ end
     m_traj_inflMaiFP_new_24 = inflMaiFP_new_24(GTDATA24)
 
     @test maximum(abs.(m_traj_inflMaiFP_legacy - m_traj_inflMaiFP_new)) < 0.1
-    @test mean(abs.(m_traj_inflMaiFP_legacy_23 - m_traj_inflMaiFP_new_23)) < 0.1
-    @test mean(abs.(m_traj_inflMaiFP_legacy_24 - m_traj_inflMaiFP_new_24)) < 0.1
+    @test maximum(abs.(m_traj_inflMaiFP_legacy_23 - m_traj_inflMaiFP_new_23)) < 0.1
+    @test maximum(abs.(m_traj_inflMaiFP_legacy_24 - m_traj_inflMaiFP_new_24)) < 0.1
 
 
 end
