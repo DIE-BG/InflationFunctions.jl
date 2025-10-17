@@ -137,7 +137,8 @@ function _checkmethod(n, p)
     issorted(p) || error("Distribución de percentiles debe estar ordenada")
     all(0 .<= p .<= 1) || error("Cuantiles deben estar entre cero y uno")
     length(filter(x -> x >= 0.01 && x <= 0.99, p)) >= 2 ||
-        error("There should be at least three segments (i.e., length of quantiles vector should be at least 3)")
+        error("There should be at least three segments (at least two cut points between 0 and 1)")
+
     return (first(p) == 0 && last(p) == 1) || error("Primer y último cuantil deben ser 0, 1")
 end
 

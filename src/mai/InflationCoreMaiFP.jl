@@ -19,7 +19,7 @@ struct InflationCoreMaiFP{T <: AbstractFloat} <: InflationCoreMai
         all(0 .<= q .<= 1) || error("Quantile vector shuld have entries between 0 and 1")
         #Check that there are more than two segments
         length(filter(x -> x >= 0.01 && x <= 0.99, q)) >= 2 ||
-            error("There should be at least three segments (i.e., length of quantiles vector should be at least 3)")
+            error("There should be at least three segments (at least two cut points between 0 and 1)")
 
 
         F = eltype(vlp)
