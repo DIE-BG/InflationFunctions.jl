@@ -35,7 +35,7 @@ Nos indica qué medida se utiliza para una instancia de una función de inflaci�
 ```julia-repl
 julia> mtfn = InflationTrimmedMeanWeighted(15.5,75.5)
 julia> measure_name(mtfn)
-"Media Truncada Ponderada (15.5 , 75.5)"
+"Weighted Trimmed Mean (15.5 , 75.5)"
 ```
 """
 function measure_name(inflfn::InflationTrimmedMeanWeighted)
