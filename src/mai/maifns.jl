@@ -113,8 +113,8 @@ function _mai_g_mm(base, q, vlp, wlp)
     return vmbase
 end
 
-# MAI-FP (F-Pure)
-function _mai_fp_mm(base, q, vlp)
+# MAI-F
+function _mai_f_mm(base, q, vlp)
     vqlp = quantile(vlp, q)
     N = length(vlp)
     T = periods(base)
@@ -161,8 +161,8 @@ function _mai_fp_mm(base, q, vlp)
 end
 
 
-# MAI-F variant
-function _mai_f_mm(base, q, vlp, wlp)
+# MAI-FG variant
+function _mai_fg_mm(base, q, vlp, wlp)
     vflp = quantile(vlp, q)
     sumwlp = sum(wlp)
     N = length(vlp)

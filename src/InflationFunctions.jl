@@ -76,11 +76,11 @@ module LegacyMai
 end
 
 ## Efficient MAI algorithms
-export InflationCoreMaiF, InflationCoreMaiG, InflationCoreMaiFP
+export InflationCoreMaiFG, InflationCoreMaiG, InflationCoreMaiF
 include("mai/maifns.jl")
 include("mai/InflationCoreMaiG.jl")
+include("mai/InflationCoreMaiFG.jl")
 include("mai/InflationCoreMaiF.jl")
-include("mai/InflationCoreMaiFP.jl")
 # Support for legacy instantiation methods
 export InflationCoreMai, MaiFP, MaiF, MaiG
 include("mai/InflationCoreMai.jl")

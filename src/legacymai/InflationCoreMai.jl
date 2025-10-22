@@ -48,7 +48,47 @@ struct MaiG{P} <: AbstractMaiMethod
     end
 end
 
-# Algoritmo de cómputo de MAI-F con n segmentos marcados en las posiciones p
+# Algoritmo de cómputo de MAI-FG con n segmentos marcados en las posiciones p
+"""
+    MaiFG{P} <: AbstractMaiMethod
+
+    MaiFG(n::Int)
+    MaiFG(p::AbstractArray)
+
+Tipo para englobar la metodología de cómputo de inflación subyacente MAI-FG, en
+la cual se transforma la distribución **de ocurrencias** (o equiponderada) de
+variaciones intermensuales utilizando la distribución histórica de variaciones
+intermensuales ponderadas. 
+
+Se proporciona el número de segmentos de normalización, o bien, las posiciones
+de los cuantiles utilizados para llevar a cabo la transformación. Si se
+proporcionan las posiciones, la primera y la última posición deben ser el
+cuantil 0 y 1, respectivamente.
+
+## Ejemplos 
+
+1. Utilizar los quintiles como puntos de referencia para normalización 
+```julia-repl 
+julia> method = MaiFG(5)
+MaiFG{StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}}}(5, 0.0:0.2:1.0)
+```
+
+2. Utilizar tres segmentos de normalización, en el primer y tercer cuartil: 
+```julia-repl 
+julia> method = MaiFG([0, 0.25, 0.75, 1])
+MaiFG{Vector{Float64}}(3, [0.0, 0.25, 0.75, 1.0])
+```
+"""
+struct MaiFG{P} <: AbstractMaiMethod
+    n::Int
+    p::P
+
+    function MaiFG(n, p)
+        _checkmethod(n, p)
+        return new{typeof(p)}(n, p)
+    end
+end
+
 """
     MaiF{P} <: AbstractMaiMethod
 
@@ -56,9 +96,10 @@ end
     MaiF(p::AbstractArray)
 
 Tipo para englobar la metodología de cómputo de inflación subyacente MAI-F, en
-la cual se transforma la distribución **de ocurrencias** (o equiponderada) de
-variaciones intermensuales utilizando la distribución histórica de variaciones
-intermensuales ponderadas. 
+la cual se transforma la distribución **de ocurrencias** de variaciones
+intermensuales utilizando la distribución histórica de variaciones
+intermensuales equiponderadas. Esta es la versión equivalente a la MAI-G, que
+utiliza **todas las distribuciones de ocurrencias**.  
 
 Se proporciona el número de segmentos de normalización, o bien, las posiciones
 de los cuantiles utilizados para llevar a cabo la transformación. Si se
@@ -89,47 +130,6 @@ struct MaiF{P} <: AbstractMaiMethod
     end
 end
 
-"""
-    MaiFP{P} <: AbstractMaiMethod
-
-    MaiFP(n::Int)
-    MaiFP(p::AbstractArray)
-
-Tipo para englobar la metodología de cómputo de inflación subyacente MAI-FP, en
-la cual se transforma la distribución **de ocurrencias** de variaciones
-intermensuales utilizando la distribución histórica de variaciones
-intermensuales equiponderadas. Esta es la versión equivalente a la MAI-G, que
-utiliza **todas las distribuciones de ocurrencias**.  
-
-Se proporciona el número de segmentos de normalización, o bien, las posiciones
-de los cuantiles utilizados para llevar a cabo la transformación. Si se
-proporcionan las posiciones, la primera y la última posición deben ser el
-cuantil 0 y 1, respectivamente.
-
-## Ejemplos 
-
-1. Utilizar los quintiles como puntos de referencia para normalización 
-```julia-repl 
-julia> method = MaiFP(5)
-MaiFP{StepRangeLen{Float64, Base.TwicePrecision{Float64}, Base.TwicePrecision{Float64}}}(5, 0.0:0.2:1.0)
-```
-
-2. Utilizar tres segmentos de normalización, en el primer y tercer cuartil: 
-```julia-repl 
-julia> method = MaiFP([0, 0.25, 0.75, 1])
-MaiFP{Vector{Float64}}(3, [0.0, 0.25, 0.75, 1.0])
-```
-"""
-struct MaiFP{P} <: AbstractMaiMethod
-    n::Int
-    p::P
-
-    function MaiFP(n, p)
-        _checkmethod(n, p)
-        return new{typeof(p)}(n, p)
-    end
-end
-
 
 # Revisión de condiciones para aplicación de métodos MAI
 function _checkmethod(n, p)
@@ -143,15 +143,15 @@ function _checkmethod(n, p)
 end
 
 # Constructores para división equitativa de posiciones p
-MaiF(n::Int) = MaiF(n, (0:n) / n)
+MaiFG(n::Int) = MaiFG(n, (0:n) / n)
 MaiG(n::Int) = MaiG(n, (0:n) / n)
-MaiFP(n::Int) = MaiFP(n, (0:n) / n)
-MaiF(p::AbstractArray) = MaiF(length(p) - 1, p)
+MaiF(n::Int) = MaiF(n, (0:n) / n)
+MaiFG(p::AbstractArray) = MaiFG(length(p) - 1, p)
 MaiG(p::AbstractArray) = MaiG(length(p) - 1, p)
-MaiFP(p::AbstractArray) = MaiFP(length(p) - 1, p)
+MaiF(p::AbstractArray) = MaiF(length(p) - 1, p)
 
 function Base.string(method::AbstractMaiMethod)
-    algorithm = method isa MaiG ? "G" : (method isa MaiF ? "F" : "FP")
+    algorithm = method isa MaiG ? "G" : (method isa MaiFG ? "FG" : "F")
     if method.p isa StepRangeLen
         return "($algorithm," * string(method.n) * ")"
     else
@@ -177,15 +177,15 @@ Los métodos de cómputo disponibles son:
   intermensuales utilizando la distribución histórica de variaciones
   intermensuales ponderadas. Se debe dar como argumento el método
   [`MaiG`](@ref).
-- Metodología MAI-F: se transforma la distribución **de ocurrencias** de
+- Metodología MAI-FG: se transforma la distribución **de ocurrencias** de
   variaciones intermensuales utilizando la distribución histórica de variaciones
   intermensuales ponderadas. Se debe dar como argumento el método
-  [`MaiF`](@ref).
-- Metodología MAI-FP: se transforma la distribución **de ocurrencias** de
+  [`MaiFG`](@ref).
+- Metodología MAI-F: se transforma la distribución **de ocurrencias** de
   variaciones intermensuales utilizando la distribución histórica de variaciones
   intermensuales **equiponderadas**. Es un equivalente directo de la metodología
   MAI-G, reemplazando todas las distribuciones por las versiones de ocurrencias.
-  Se debe dar como argumento el método [`MaiFP`](@ref).
+  Se debe dar como argumento el método [`MaiF`](@ref).
 """
 Base.@kwdef struct InflationCoreMai{T <: AbstractFloat, B, M <: AbstractMaiMethod} <: InflationFunction
     vspace::StepRangeLen{T, B, B} = V
@@ -229,8 +229,8 @@ function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, met
     return vm
 end
 
-# Función de resumen intermensual para metodología MAI-F
-function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiF) where {T}
+# Función de resumen intermensual para metodología MAI-FG
+function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiFG) where {T}
     # Intuitivamente, las distribuciones de largo plazo podrían computarse más
     # sencillamente de esta forma. Sin embargo, parece que hay problemas de
     # precisión en los vectores dispersos al agregar las distribuciones de cada
@@ -315,14 +315,14 @@ function (inflfn::InflationCoreMai)(base::VarCPIBase{T}, method::MaiG, glp, GLP,
     return mai_m
 end
 
-# Variaciones intermensuales resumen con método de MAI-F
-function (inflfn::InflationCoreMai)(base::VarCPIBase{T}, method::MaiF, glp, GLP, q_flp) where {T}
+# Variaciones intermensuales resumen con método de MAI-FG
+function (inflfn::InflationCoreMai)(base::VarCPIBase{T}, method::MaiFG, glp, GLP, q_flp) where {T}
 
     mai_m = Vector{T}(undef, periods(base))
     #q_f_list = [zeros(T, method.n + 1) for _ in 1:Threads.nthreads()]
     q_f = zeros(T, method.n + 1)
     # Utilizar la glp y (FLP, GLP) para computar el resumen intermensual por
-    # metodología de inflación subyacente MAI-F
+    # metodología de inflación subyacente MAI-FG
     for t in 1:periods(base)
 
         # Computar distribución f y acumularla
@@ -340,13 +340,13 @@ function (inflfn::InflationCoreMai)(base::VarCPIBase{T}, method::MaiF, glp, GLP,
 end
 
 
-## Metodología MAI-FP
+## Metodología MAI-F
 
 # Aplicación directa de las fórmulas de normalización de la
 # metodología MAI-G, utilizando las distribuciones de ocurrencias
 
-# Función de resumen intermensual para metodología MAI-FP
-function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiFP) where {T}
+# Función de resumen intermensual para metodología MAI-F
+function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiF) where {T}
     # Computar flp, tomando en cuenta observaciones de años completos en
     # la última base del CountryStructure
     V_star = _get_vstar(cs)
@@ -362,8 +362,8 @@ function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, met
     return vm
 end
 
-# Variaciones intermensuales resumen con método de MAI-FP
-function (inflfn::InflationCoreMai)(base::VarCPIBase{T}, method::MaiFP, flp, FLP, q_flp) where {T}
+# Variaciones intermensuales resumen con método de MAI-F
+function (inflfn::InflationCoreMai)(base::VarCPIBase{T}, method::MaiF, flp, FLP, q_flp) where {T}
 
     mai_m = Vector{T}(undef, periods(base))
     q_f = zeros(T, method.n + 1)
@@ -407,7 +407,7 @@ function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, met
 end
 
 # Función de resumen intermensual para metodología MAI-F con fecha
-function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiF, date::Date) where {T}
+function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiFG, date::Date) where {T}
     # Intuitivamente, las distribuciones de largo plazo podrían computarse más
     # sencillamente de esta forma. Sin embargo, parece que hay problemas de
     # precisión en los vectores dispersos al agregar las distribuciones de cada
@@ -437,8 +437,8 @@ function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, met
     return vm
 end
 
-# Función de resumen intermensual para metodología MAI-FP con fecha
-function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiFP, date::Date) where {T}
+# Función de resumen intermensual para metodología MAI-F con fecha
+function (inflfn::InflationCoreMai{T})(cs::CountryStructure, ::CPIVarInterm, method::MaiF, date::Date) where {T}
     # Computar flp, tomando en cuenta observaciones de años completos en
     # la última base del CountryStructure
     V_star = _get_vstar(cs[date])

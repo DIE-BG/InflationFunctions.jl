@@ -6,4 +6,4 @@
 -  Translate measures names.
 -  Add tag to every function script file.
 -  Add new tests to verify functionality of Gaussian Smoothing functions.
-  
+-  Change name of MAI-F function to MAI-FG, and name to MAI-FP to MAI-F.

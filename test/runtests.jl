@@ -286,14 +286,50 @@ end
 end
 
 
+## MAI-FG
+@testset "InflationCoreMaiFG" begin
+    # Instanciar un tipo
+    cst_test = GTDATA24
+    base_test = GT10
+    vlp = vec(base_test.v)
+    wlp = repeat(base_test.w, periods(base_test))
+    inflMaiFG_with_base_q = InflationCoreMaiFG(vlp, wlp, 0:0.2:1)
+    inflMaiFG_with_cst_q = InflationCoreMaiFG(cst_test, 0:0.2:1)
+    inflMaiFG_with_cst_n = InflationCoreMaiFG(cst_test, 5)
+
+    @test inflMaiFG_with_base_q isa InflationCoreMaiFG
+    @test inflMaiFG_with_cst_q isa InflationCoreMaiFG
+    @test inflMaiFG_with_cst_n isa InflationCoreMaiFG
+
+    # Test that function has correct name and tag
+    @test measure_name(inflMaiFG_with_base_q) isa String
+    @test measure_tag(inflMaiFG_with_base_q) isa String
+
+
+    # Test that function can be called on base and countryst
+
+
+    m_traj_infl = inflMaiFG_with_base_q(base_test)
+    @test m_traj_infl isa AbstractVector
+    # Obtenemos un UniformCountryStructure con dos bases y todas las variaciones
+    # intermensuales
+    traj_infl_n = inflMaiFG_with_cst_n(cst_test)
+    traj_infl_q = inflMaiFG_with_cst_q(cst_test)
+    @test traj_infl_n isa AbstractVector
+
+    @test all((traj_infl_n - traj_infl_q) .== 0)
+    # Testa that trajectory is longer than monthly summary
+    @test length(traj_infl_n) > length(m_traj_infl)
+
+end
+
 ## MAI-F
 @testset "InflationCoreMaiF" begin
     # Instanciar un tipo
     cst_test = GTDATA24
     base_test = GT10
     vlp = vec(base_test.v)
-    wlp = repeat(base_test.w, periods(base_test))
-    inflMaiF_with_base_q = InflationCoreMaiF(vlp, wlp, 0:0.2:1)
+    inflMaiF_with_base_q = InflationCoreMaiF(vlp, 0:0.2:1)
     inflMaiF_with_cst_q = InflationCoreMaiF(cst_test, 0:0.2:1)
     inflMaiF_with_cst_n = InflationCoreMaiF(cst_test, 5)
 
@@ -305,9 +341,7 @@ end
     @test measure_name(inflMaiF_with_base_q) isa String
     @test measure_tag(inflMaiF_with_base_q) isa String
 
-
     # Test that function can be called on base and countryst
-
 
     m_traj_infl = inflMaiF_with_base_q(base_test)
     @test m_traj_infl isa AbstractVector
@@ -315,40 +349,6 @@ end
     # intermensuales
     traj_infl_n = inflMaiF_with_cst_n(cst_test)
     traj_infl_q = inflMaiF_with_cst_q(cst_test)
-    @test traj_infl_n isa AbstractVector
-
-    @test all((traj_infl_n - traj_infl_q) .== 0)
-    # Testa that trajectory is longer than monthly summary
-    @test length(traj_infl_n) > length(m_traj_infl)
-
-end
-
-## MAI_FP
-@testset "InflationCoreMaiFP" begin
-    # Instanciar un tipo
-    cst_test = GTDATA24
-    base_test = GT10
-    vlp = vec(base_test.v)
-    inflMaiFP_with_base_q = InflationCoreMaiFP(vlp, 0:0.2:1)
-    inflMaiFP_with_cst_q = InflationCoreMaiFP(cst_test, 0:0.2:1)
-    inflMaiFP_with_cst_n = InflationCoreMaiFP(cst_test, 5)
-
-    @test inflMaiFP_with_base_q isa InflationCoreMaiFP
-    @test inflMaiFP_with_cst_q isa InflationCoreMaiFP
-    @test inflMaiFP_with_cst_n isa InflationCoreMaiFP
-
-    # Test that function has correct name and tag
-    @test measure_name(inflMaiFP_with_base_q) isa String
-    @test measure_tag(inflMaiFP_with_base_q) isa String
-
-    # Test that function can be called on base and countryst
-
-    m_traj_infl = inflMaiFP_with_base_q(base_test)
-    @test m_traj_infl isa AbstractVector
-    # Obtenemos un UniformCountryStructure con dos bases y todas las variaciones
-    # intermensuales
-    traj_infl_n = inflMaiFP_with_cst_n(cst_test)
-    traj_infl_q = inflMaiFP_with_cst_q(cst_test)
     @test traj_infl_n isa AbstractVector
 
     @test all((traj_infl_n - traj_infl_q) .== 0)
@@ -383,6 +383,27 @@ end
     @test mean(abs.(m_traj_inflMaiG_legacy_23 - m_traj_inflMaiG_new_23)) < 0.1
     @test mean(abs.(m_traj_inflMaiG_legacy_24 - m_traj_inflMaiG_new_24)) < 0.1
 
+    ## Test MAI-FG with legacy code and new code
+
+    inflMaiFG_legacy = InflationFunctions.LegacyMai.InflationCoreMaiFG(5)
+
+    m_traj_inflMaiFG_legacy = inflMaiFG_legacy(GTDATA)
+    m_traj_inflMaiFG_legacy_23 = inflMaiFG_legacy(GTDATA23)
+    m_traj_inflMaiFG_legacy_24 = inflMaiFG_legacy(GTDATA24)
+
+    # Test MAI-FG with new code
+    inflMaiFG_new = InflationCoreMaiFG(GTDATA, 5)
+    inflMaiFG_new_23 = InflationCoreMaiFG(GTDATA23, 5)
+    inflMaiFG_new_24 = InflationCoreMaiFG(GTDATA24, 5)
+
+    m_traj_inflMaiFG_new = inflMaiFG_new(GTDATA)
+    m_traj_inflMaiFG_new_23 = inflMaiFG_new_23(GTDATA23)
+    m_traj_inflMaiFG_new_24 = inflMaiFG_new_24(GTDATA24)
+
+    @test mean(abs.(m_traj_inflMaiFG_legacy - m_traj_inflMaiFG_new)) < 0.1
+    @test mean(abs.(m_traj_inflMaiFG_legacy_23 - m_traj_inflMaiFG_new_23)) < 0.1
+    @test mean(abs.(m_traj_inflMaiFG_legacy_24 - m_traj_inflMaiFG_new_24)) < 0.1
+
     ## Test MAI-F with legacy code and new code
 
     inflMaiF_legacy = InflationFunctions.LegacyMai.InflationCoreMaiF(5)
@@ -391,7 +412,7 @@ end
     m_traj_inflMaiF_legacy_23 = inflMaiF_legacy(GTDATA23)
     m_traj_inflMaiF_legacy_24 = inflMaiF_legacy(GTDATA24)
 
-    # Test MAI-G with new code
+    # Test MAI-F with new code
     inflMaiF_new = InflationCoreMaiF(GTDATA, 5)
     inflMaiF_new_23 = InflationCoreMaiF(GTDATA23, 5)
     inflMaiF_new_24 = InflationCoreMaiF(GTDATA24, 5)
@@ -403,27 +424,6 @@ end
     @test mean(abs.(m_traj_inflMaiF_legacy - m_traj_inflMaiF_new)) < 0.1
     @test mean(abs.(m_traj_inflMaiF_legacy_23 - m_traj_inflMaiF_new_23)) < 0.1
     @test mean(abs.(m_traj_inflMaiF_legacy_24 - m_traj_inflMaiF_new_24)) < 0.1
-
-    ## Test MAI-FP with legacy code and new code
-
-    inflMaiFP_legacy = InflationFunctions.LegacyMai.InflationCoreMaiFP(5)
-
-    m_traj_inflMaiFP_legacy = inflMaiFP_legacy(GTDATA)
-    m_traj_inflMaiFP_legacy_23 = inflMaiFP_legacy(GTDATA23)
-    m_traj_inflMaiFP_legacy_24 = inflMaiFP_legacy(GTDATA24)
-
-    # Test MAI-G with new code
-    inflMaiFP_new = InflationCoreMaiFP(GTDATA, 5)
-    inflMaiFP_new_23 = InflationCoreMaiFP(GTDATA23, 5)
-    inflMaiFP_new_24 = InflationCoreMaiFP(GTDATA24, 5)
-
-    m_traj_inflMaiFP_new = inflMaiFP_new(GTDATA)
-    m_traj_inflMaiFP_new_23 = inflMaiFP_new_23(GTDATA23)
-    m_traj_inflMaiFP_new_24 = inflMaiFP_new_24(GTDATA24)
-
-    @test mean(abs.(m_traj_inflMaiFP_legacy - m_traj_inflMaiFP_new)) < 0.1
-    @test mean(abs.(m_traj_inflMaiFP_legacy_23 - m_traj_inflMaiFP_new_23)) < 0.1
-    @test mean(abs.(m_traj_inflMaiFP_legacy_24 - m_traj_inflMaiFP_new_24)) < 0.1
 
 
 end
