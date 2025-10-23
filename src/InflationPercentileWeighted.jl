@@ -69,34 +69,25 @@ julia>percfn(gtdata)
 Se obtienen los mismos resultados
 """
 InflationPercentileWeighted(k::Int) = InflationPercentileWeighted(k = Float32(k) / 100)
-function InflationPercentileWeighted(q::T) where {T <: AbstractFloat} 
+function InflationPercentileWeighted(q::T) where {T <: AbstractFloat}
     q < 1.0 && return InflationPercentileWeighted(convert(Float32, q))
-    InflationPercentileWeighted(convert(Float32, q) / 100)
+    return InflationPercentileWeighted(convert(Float32, q) / 100)
 end
 
-"""
-    measure_name(inflfn::InflationPercentileWeighted)
+measure_name(inflfn::InflationPercentileWeighted) = MEASURE_NAMES[(LANGUAGE, :InflationPercentileWeighted)] * string(round(100inflfn.k, digits = 2))
+# tag
+measure_tag(inflfn::InflationPercentileWeighted) = "WPer-" * string(round(100inflfn.k, digits = 2))
 
-Indica qué medida se utiliza para una instancia de una función de inflación.
-
-# Ejemplo
-```julia-repl
-julia> percfn = InflationPercentileWeighted(0.70)
-julia> measure_name(percfn)
-"Percentil ponderado 70.0"
-```
-"""
-measure_name(inflfn::InflationPercentileWeighted) = "Percentil ponderado " * string(round(100inflfn.k, digits=2))
 
 # Parámetro de la función de inflación
-params(inflfn::InflationPercentileWeighted) = (inflfn.k, )
+params(inflfn::InflationPercentileWeighted) = (inflfn.k,)
 
 # Las funciones sobre VarCPIBase se resumen en variaciones intermensuales
-function (inflfn::InflationPercentileWeighted)(base::VarCPIBase{T}) where T 
+function (inflfn::InflationPercentileWeighted)(base::VarCPIBase{T}) where {T}
     # InflationPercentileWeighted k de la distribución de variaciones intermensuales
     k = inflfn.k
 
-    # Obtener el percentil k de la distribución intermensual 
+    # Obtener el percentil k de la distribución intermensual
     rows = size(base.v, 1)
     w = StatsBase.aweights(base.w)
 
@@ -104,10 +95,10 @@ function (inflfn::InflationPercentileWeighted)(base::VarCPIBase{T}) where T
     Threads.@threads for r in 1:rows
         row = @view base.v[r, :]
         k_interm[r] = StatsBase.quantile(row, w, k)
-        
+
     end
-    
-    k_interm
+
+    return k_interm
 end
 
 function InflationPercentileWeighted(vec::Vector{<:Real})

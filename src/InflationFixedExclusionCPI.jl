@@ -67,54 +67,59 @@ julia> InfExc(gtdata)
 """
 Base.@kwdef struct InflationFixedExclusionCPI{N} <: InflationFunction
     # Tupla con vectores de gastos básicos a excluir en cada base (tantos vectores como bases)
-    v_exc::NTuple{N,Vector{Int}}
+    v_exc::NTuple{N, Vector{Int}}
 end
 
 # Ampliación para que reciba solo los vectores, no necesariamente como una tupla.
 InflationFixedExclusionCPI(v_exc...) = InflationFixedExclusionCPI(v_exc)
 
 # Extender el método de nombre y de tag
-measure_name(inflfn::InflationFixedExclusionCPI) = "Exclusión fija de gastos básicos IPC " * string(map(length, inflfn.v_exc))
+measure_name(inflfn::InflationFixedExclusionCPI) = MEASURE_NAMES[(LANGUAGE, :InflationFixedExclusion)] * string(map(length, inflfn.v_exc))
+
+#tag
+measure_tag(inflfn::InflationFixedExclusionCPI) = "FxExCPI-" * string(map(length, inflfn.v_exc))
 
 # Método para obtener parámetros
 params(inflfn::InflationFixedExclusionCPI) = inflfn.v_exc
 
 # Cómputo del resumen intermensual utilizando la lista de exclusión i
-function (inflfn::InflationFixedExclusionCPI)(base::VarCPIBase{T}, i::Int) where T 
-    # Elección del vector de exclusión a utlizar dependiendo de que base se está tomando 
-    # 1 -> base 2000, 2-> base 2010 (se puede generalizar para más bases)  
+function (inflfn::InflationFixedExclusionCPI)(base::VarCPIBase{T}, i::Int) where {T}
+    # Elección del vector de exclusión a utlizar dependiendo de que base se está tomando
+    # 1 -> base 2000, 2-> base 2010 (se puede generalizar para más bases)
     exc = inflfn.v_exc[i]
     # Capitalizar los índices de precios a partir del objeto base::VarCPIBase
-    base_ipc= capitalize(base.v, base.baseindex)
+    base_ipc = capitalize(base.v, base.baseindex)
     # creación de una copia de la lista original de pesos desde base.w
     w_exc = copy(base.w)
-    # Asignación de peso cero a los gastos básicos de la lista de exclusión (exc = inflfn.v_exc[i]) 
+    # Asignación de peso cero a los gastos básicos de la lista de exclusión (exc = inflfn.v_exc[i])
     # (j itera sobre los elementos de la lista de exclusión)
-        for j in exc w_exc[j] = 0 end
+    for j in exc
+        w_exc[j] = 0
+    end
     # Renormalización de pesos
     w_exc = w_exc / sum(w_exc)
-    # Obtener Ipc con exclusión 
-    cpi_exc = base_ipc*w_exc
+    # Obtener Ipc con exclusión
+    cpi_exc = base_ipc * w_exc
     # Obtener variación intermensual
-    varm_cpi_exc =  varinterm(cpi_exc)
+    return varm_cpi_exc = varinterm(cpi_exc)
 end
 
 
 # Redefinición del método para obtener variaciones intermensuales del CountryStructure
-function (inflfn::InflationFixedExclusionCPI)(cs::CountryStructure, ::CPIVarInterm) 
-    # Acá se llama a inflfn(base, i), en donde base es de tipo VarCPIBase e i es la posición del vector de exclusión. 
+function (inflfn::InflationFixedExclusionCPI)(cs::CountryStructure, ::CPIVarInterm)
+    # Acá se llama a inflfn(base, i), en donde base es de tipo VarCPIBase e i es la posición del vector de exclusión.
     # Esta es la función que debe definirse para cualquier medida de inflación.
     l = length(cs.base)
-    vm = mapfoldl(i -> inflfn(cs.base[i],i), vcat, 1:l)
-    vm
+    vm = mapfoldl(i -> inflfn(cs.base[i], i), vcat, 1:l)
+    return vm
 end
 
-## CON FECHA 
+## CON FECHA
 
-function (inflfn::InflationFixedExclusionCPI)(base::VarCPIBase{T}, i::Int, date::Date) where T 
-    inflfn(base,i)
+function (inflfn::InflationFixedExclusionCPI)(base::VarCPIBase{T}, i::Int, date::Date) where {T}
+    return inflfn(base, i)
 end
 
 function (inflfn::InflationFixedExclusionCPI)(cs::CountryStructure, ::CPIVarInterm, date::Date)
-    inflfn(cs, CPIVarInterm())
+    return inflfn(cs, CPIVarInterm())
 end

@@ -44,39 +44,33 @@ end
 
 # Método para recibir argumentos como par en una tupla.
 InflationDynamicExclusion(factors::Tuple{Real, Real}) = InflationDynamicExclusion(
-    convert(Float32, factors[1]), 
+    convert(Float32, factors[1]),
     convert(Float32, factors[2])
 )
 
 # Método para recibir argumentos como par en una lista.
 function (InflationDynamicExclusion)(factor_vec::Vector{<:Real})
     length(factor_vec) != 2 && return @error "Dimensión incorrectal del vector"
-    InflationDynamicExclusion(
+    return InflationDynamicExclusion(
         convert(Float32, factor_vec[1]),
         convert(Float32, factor_vec[2])
     )
 end
 
-"""
-    measure_name(inflfn::InflationDynamicExclusion)
-
-Indica qué medida se utiliza para una instancia de una función de inflación.
-
-# Ejemplo
-```julia-repl
-julia> dynExfn = InflationDynamicExclusion(2, 2)
-julia> measure_name(dynExfn)
-"Inflación de exclusión dinámica (2.0, 2.0)"
-```
-"""
 function CPIDataBase.measure_name(inflfn::InflationDynamicExclusion)
     round_lower_factor, round_upper_factor = string.(
-        round.(
-            [inflfn.lower_factor, inflfn.upper_factor], digits = 2
-        )
+        round.([inflfn.lower_factor, inflfn.upper_factor], digits = 2)
     )
-    "Inflación de exclusión dinámica ($(round_lower_factor), $(round_upper_factor))"    
+    return MEASURE_NAMES[(LANGUAGE, :InflationDynamicExclusion)] * "($(round_lower_factor), $(round_upper_factor))"
 end
+#tag
+function CPIDataBase.measure_tag(inflfn::InflationDynamicExclusion)
+    round_lower_factor, round_upper_factor = string.(
+        round.( [inflfn.lower_factor, inflfn.upper_factor], digits = 2)
+    )
+    return "DynEx($(round_lower_factor),$(round_upper_factor))"
+end
+
 
 """
     measure_tag(inflfn::InflationDynamicExclusion)
@@ -101,14 +95,14 @@ function (inflfn::InflationDynamicExclusion)(base::VarCPIBase)
     std_v = std(base.v, dims = 2)
     mean_v = mean(base.v, dims = 2)
 
-    dynEx_filter = (mean_v - (lower_factor .* std_v)) .<= 
-        base.v .<= 
+    dynEx_filter = (mean_v - (lower_factor .* std_v)) .<=
+        base.v .<=
         (mean_v + (upper_factor .* std_v))
 
     dynEx_w = base.w' .* dynEx_filter
     dynEx_w = dynEx_w ./ sum(dynEx_w, dims = 2)
 
-    dynEx_v = sum(
+    return dynEx_v = sum(
         base.v .* dynEx_w,
         dims = 2
     ) |> vec
