@@ -9,7 +9,7 @@ struct InflationWeightedMean <: InflationFunction
 end
 
 # 2. Extender el método de nombre
-measure_name(::InflationWeightedMean) = "Interannual Weighted Mean"
+measure_name(::InflationWeightedMean) = MEASURE_NAMES[(LANGUAGE, :InflationWeightedMean)]
 
 #tag
 measure_tag(::InflationWeightedMean) = "WM"

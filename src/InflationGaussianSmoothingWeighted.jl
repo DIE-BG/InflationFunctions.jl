@@ -72,7 +72,7 @@ function measure_name(inflfn::InflationGSWeighted)
     s1 = string(round(inflfn.s1, digits = 2))
     s2 = string(round(inflfn.s2, digits = 2))
     r = inflfn.r
-    return "Weighted Gaussian Smoothing ($p, $s1, $s2, $r)"
+    return MEASURE_NAMES[(LANGUAGE, :InflationGSWeighted)] * "($p, $s1, $s2, $r)"
 end
 #tags
 function measure_tag(inflfn::InflationGSWeighted)

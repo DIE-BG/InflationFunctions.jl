@@ -21,7 +21,8 @@ struct InflationExpSmoothing{F <: InflationFunction} <: InflationFunction
 end
 
 # 2. Extender el método de nombre
-measure_name(esfn::InflationExpSmoothing) = "Smoothing Exponential with parameter $(round(esfn.alpha, digits = 4)) of " * measure_name(esfn.inflfn)
+measure_name(esfn::InflationExpSmoothing) = 
+    measure_name(esfn.inflfn) * MEASURE_NAMES[(LANGUAGE, :InflationExpSmoothing)] * "$(round(esfn.alpha, digits = 4))"
 #tag
 measure_tag(esfn::InflationExpSmoothing) = "ES$(round(esfn.alpha, digits = 4))_" * measure_tag(esfn.inflfn)
 

@@ -26,22 +26,10 @@ julia> mtfn = InflationTrimmedMeanWeighted(25,75.5)
 """
 InflationTrimmedMeanWeighted(l1::Real, l2::Real) = InflationTrimmedMeanWeighted(l1 = Float32(l1), l2 = Float32(l2))
 
-"""
-    measure_name(inflfn::InflationTrimmedMeanWeighted)
-
-Nos indica qué medida se utiliza para una instancia de una función de inflación.
-
-# Ejemplo:  
-```julia-repl
-julia> mtfn = InflationTrimmedMeanWeighted(15.5,75.5)
-julia> measure_name(mtfn)
-"Weighted Trimmed Mean (15.5 , 75.5)"
-```
-"""
 function measure_name(inflfn::InflationTrimmedMeanWeighted)
     l1 = string(round(inflfn.l1, digits = 2))
     l2 = string(round(inflfn.l2, digits = 2))
-    return "Weighted Trimmed Mean (" * l1 * ", " * l2 * ")"
+    return MEASURE_NAMES[(LANGUAGE, :InflationTrimmedMeanWeighted)] * "(" * l1 * ", " * l2 * ")"
 end
 
 #tag

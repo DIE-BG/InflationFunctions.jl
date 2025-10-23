@@ -19,7 +19,7 @@ struct InflationMovingAverage{F <: InflationFunction} <: InflationFunction
 end
 
 # 2. Extender el método de nombre
-measure_name(mafn::InflationMovingAverage) = "Moving Average of $(mafn.periods) periods of" * measure_name(mafn.inflfn)
+measure_name(mafn::InflationMovingAverage) = MEASURE_NAMES[(LANGUAGE, :InflationMovingAverage)] * "$(mafn.periods): " * measure_name(mafn.inflfn)
 #tag
 measure_tag(mafn::InflationMovingAverage) = "MA$(mafn.periods)_" * measure_tag(mafn.inflfn)
 

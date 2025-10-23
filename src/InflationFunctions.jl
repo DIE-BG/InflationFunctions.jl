@@ -16,6 +16,14 @@ using Dates
 import CPIDataBase: measure_name, measure_tag, params
 _vecstr(q) = "(" * join(string.(round.(q, digits = 2)), ",") * ")"
 
+## Dictionary with measure names in English and Spanish 
+# This setting can be set by calling the set_language!(language) method
+# The default is English
+LANGUAGE = :english
+export set_language!
+include("measure_names.jl")
+
+
 ## Media simple interanual
 export InflationSimpleMean
 include("InflationSimpleMean.jl")
@@ -98,11 +106,7 @@ export InflationGSEq, InflationGSWeighted
 include("InflationGaussianSmoothingEq.jl")
 include("InflationGaussianSmoothingWeighted.jl")
 
-## Etiquetas
-#include("inflation_tags.jl")
-
-## Desarrollo
-include("dev/totalcpi_methods.jl")
+## R&D
 
 ## Recetas para Gráficas
 include("recipes/plotrecipes.jl")

@@ -70,7 +70,7 @@ function measure_name(inflfn::InflationGSEq)
     s1 = string(round(inflfn.s1, digits = 2))
     s2 = string(round(inflfn.s2, digits = 2))
     r = inflfn.r
-    return "Equally Weighted Gausssian Smoothing ($p, $s1, $s2, $r)"
+    return MEASURE_NAMES[(LANGUAGE, :InflationFixedExclusion)] * "($p, $s1, $s2, $r)"
 end
 
 

@@ -9,7 +9,7 @@ struct InflationSimpleMean <: InflationFunction
 end
 
 # 2. Extender el método de nombre
-measure_name(::InflationSimpleMean) = "Interannual Simple Mean"
+measure_name(::InflationSimpleMean) = MEASURE_NAMES[(LANGUAGE, :InflationSimpleMean)]
 
 # Tag for inflation measure
 measure_tag(::InflationSimpleMean) = "SM"

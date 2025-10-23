@@ -28,7 +28,6 @@ function get_segments(q_cp, q_lp)
     # disribución del mes o ventana
     s̄ = findfirst(>(0), q_cp)
     s̲ = something(findlast(<(0), q_cp), 0)
-    #Main.@infiltrate
     # Obtener los números comunes
     r̲ = min(k̲, s̲)
     r̄ = max(k̄, s̄)

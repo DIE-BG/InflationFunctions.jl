@@ -74,22 +74,9 @@ function InflationPercentileWeighted(q::T) where {T <: AbstractFloat}
     return InflationPercentileWeighted(convert(Float32, q) / 100)
 end
 
-"""
-    measure_name(inflfn::InflationPercentileWeighted)
-
-Indica qué medida se utiliza para una instancia de una función de inflación.
-
-# Ejemplo
-```julia-repl
-julia> percfn = InflationPercentileWeighted(0.70)
-julia> measure_name(percfn)
-"Weighted Percentile 70.0"
-```
-"""
-measure_name(inflfn::InflationPercentileWeighted) = "Weighted Percentile" * string(round(100inflfn.k, digits = 2))
+measure_name(inflfn::InflationPercentileWeighted) = MEASURE_NAMES[(LANGUAGE, :InflationPercentileWeighted)] * string(round(100inflfn.k, digits = 2))
 # tag
 measure_tag(inflfn::InflationPercentileWeighted) = "WPer-" * string(round(100inflfn.k, digits = 2))
-#measure_tag(inflfn::InflationPercentileWeighted) = "WPER-" * string(round(100inflfn.k, digits=2))
 
 
 # Parámetro de la función de inflación

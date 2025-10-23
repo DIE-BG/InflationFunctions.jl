@@ -22,7 +22,7 @@ function (inflfn::InflationConstant)(base::VarCPIBase{T}) where {T}
 end
 
 # Nombre de la medida
-measure_name(inflfn::InflationConstant) = "Constant Interannual Variation equals to  " * string(round(inflfn.c, digits = 2))
+measure_name(inflfn::InflationConstant) = MEASURE_NAMES[(LANGUAGE, :InflationConstant)] * string(round(inflfn.c, digits = 2))
 
 #tag
 measure_tag(inflfn::InflationConstant) = "C" * string(round(inflfn.c, digits = 2))

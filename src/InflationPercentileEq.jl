@@ -76,22 +76,9 @@ function InflationPercentileEq(q::T) where {T <: AbstractFloat}
     return InflationPercentileEq(convert(Float32, q) / 100)
 end
 
-"""
-    measure_name(inflfn::InflationPercentileEq)
-
-Indica qué medida se utiliza para una instancia de una función de inflación.
-
-# Ejemplo
-```julia-repl
-julia> percEqfn = InflationPercentileEq(0.70)
-julia> measure_name(percEqfn)
-"Equally Weighted Percentile 70.0"
-```
-"""
-measure_name(inflfn::InflationPercentileEq) = "Equally Weighted Percentile " * string(round(100inflfn.k, digits = 2))
+measure_name(inflfn::InflationPercentileEq) = MEASURE_NAMES[(LANGUAGE, :InflationPercentileEq)] * string(round(100inflfn.k, digits = 2))
 #tag
 measure_tag(inflfn::InflationPercentileEq) = "EqPer-" * string(round(100inflfn.k, digits = 2))
-#measure_tag(inflfn::InflationPercentileEq) = "EQPER-" * string(round(100inflfn.k, digits=2))
 
 
 # Parámetro de la función de inflación

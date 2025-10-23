@@ -51,23 +51,10 @@ function InflationTrimmedMeanEq(l1::Real, l2::Real)
     return InflationTrimmedMeanEq(Float32(l1), Float32(l2))
 end
 
-"""
-    measure_name(inflfn::InflationTrimmedMeanEq)
-
-Nos indica qué medida se utiliza para una instancia de una función de inflación.
-
-# Ejemplo:  
-
-```julia-repl
-julia> mtfn = InflationTrimmedMeanEq(15.5,75.5)
-julia> measure_name(mtfn) 
-"Equally Weighted Trimmed Mean (15.5 , 75.5)"
-```
-"""
 function measure_name(inflfn::InflationTrimmedMeanEq)
     l1 = string(round(inflfn.l1, digits = 2))
     l2 = string(round(inflfn.l2, digits = 2))
-    return "Equally Weighted Trimmed Mean (" * l1 * ", " * l2 * ")"
+    return MEASURE_NAMES[(LANGUAGE, :InflationTrimmedMeanEq)] * "(" * l1 * ", " * l2 * ")"
 end
 
 #tag

@@ -54,6 +54,6 @@ function (inflfn::InflationCoreMaiFG)(base::VarCPIBase{T}) where {T}
 end
 
 # Extend utility functions
-CPIDataBase.measure_name(inflfn::InflationCoreMaiFG) = "Mai-FG " * _vecstr(inflfn.q)
+CPIDataBase.measure_name(inflfn::InflationCoreMaiFG) = MEASURE_NAMES[(LANGUAGE, :InflationCoreMaiG)] * _vecstr(inflfn.q)
 CPIDataBase.measure_tag(inflfn::InflationCoreMaiFG) = "Mai-FG " * _vecstr(inflfn.q)
 CPIDataBase.params(inflfn::InflationCoreMaiFG) = (inflfn.vlp, inflfn.wlp, inflfn.q)

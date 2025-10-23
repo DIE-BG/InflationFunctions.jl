@@ -5,10 +5,36 @@ using Test
 using CPIDataGT
 CPIDataGT.load_data()
 
+@testset "inflationfunctions.jl" begin
 
-@test periods(GT00) == 120
-@testset "InflationFunctions.jl" begin
-    # Write your tests here.
+    @testset "inflationfunction method names and tags" begin
+        inflation_functions = [
+            InflationConstant(2), 
+            InflationDynamicExclusion(1.5, 1.5), 
+            InflationExpSmoothing(InflationTotalCPI(), 0.4),
+            InflationFixedExclusion([1]), 
+            InflationFixedExclusionCPI([1]),
+            InflationGSEq(70, 0.1, 0.2, 2),
+            InflationGSWeighted(70, 0.1, 0.2, 2),
+            InflationMovingAverage(InflationTotalCPI(), 12),
+            InflationPercentileEq(70), 
+            InflationPercentileWeighted(70), 
+            InflationSimpleMean(),
+            InflationWeightedMean(), 
+            InflationTotalRebaseCPI(36,2), 
+            InflationTrimmedMeanEq(25, 75),
+            InflationTrimmedMeanWeighted(25, 75),
+            InflationCoreMaiF(GTDATA24, 10),
+            InflationCoreMaiFG(GTDATA24, 10),
+            InflationCoreMaiG(GTDATA24, 10),
+        ]
+        # test all InflationFunction objects for proper method_name and method_tag implementation
+        for inflfn in inflation_functions
+            @test measure_name(inflfn) isa String
+            @test measure_tag(inflfn) isa String
+        end
+        
+    end
 end
 
 # Pruebas sobre medidas de inflación. Se debe probar instanciar los tipos y que

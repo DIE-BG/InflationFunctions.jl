@@ -57,32 +57,16 @@ function (InflationDynamicExclusion)(factor_vec::Vector{<:Real})
     )
 end
 
-"""
-    measure_name(inflfn::InflationDynamicExclusion)
-
-Indica qué medida se utiliza para una instancia de una función de inflación.
-
-# Ejemplo
-```julia-repl
-julia> dynExfn = InflationDynamicExclusion(2, 2)
-julia> measure_name(dynExfn)
-"Dynamic exclusion inflation (2.0, 2.0)"
-```
-"""
 function CPIDataBase.measure_name(inflfn::InflationDynamicExclusion)
     round_lower_factor, round_upper_factor = string.(
-        round.(
-            [inflfn.lower_factor, inflfn.upper_factor], digits = 2
-        )
+        round.([inflfn.lower_factor, inflfn.upper_factor], digits = 2)
     )
-    return "Dynamic Exclusion Inflation ($(round_lower_factor), $(round_upper_factor))"
+    return MEASURE_NAMES[(LANGUAGE, :InflationDynamicExclusion)] * "($(round_lower_factor), $(round_upper_factor))"
 end
 #tag
 function CPIDataBase.measure_tag(inflfn::InflationDynamicExclusion)
     round_lower_factor, round_upper_factor = string.(
-        round.(
-            [inflfn.lower_factor, inflfn.upper_factor], digits = 2
-        )
+        round.( [inflfn.lower_factor, inflfn.upper_factor], digits = 2)
     )
     return "DynEx($(round_lower_factor),$(round_upper_factor))"
 end
