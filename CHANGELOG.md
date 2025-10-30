@@ -1,3 +1,10 @@
+# Change Log 
+
+## [0.5.1] 2025-10
+
+### Fixed
+- `InflationFixedExclusionCPI`: The aggregate base index was not being used to compute the month-on-month inflation for the fixed-exclusion method.
+
 ## [0.5.0] 2025-10
 
 ### Added 

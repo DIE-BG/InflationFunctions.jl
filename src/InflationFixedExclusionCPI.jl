@@ -93,15 +93,15 @@ function (inflfn::InflationFixedExclusionCPI)(base::VarCPIBase{T}, i::Int) where
     w_exc = copy(base.w)
     # Asignación de peso cero a los gastos básicos de la lista de exclusión (exc = inflfn.v_exc[i])
     # (j itera sobre los elementos de la lista de exclusión)
-    for j in exc
-        w_exc[j] = 0
-    end
+    w_exc[exc] .= 0
     # Renormalización de pesos
     w_exc = w_exc / sum(w_exc)
     # Obtener Ipc con exclusión
     cpi_exc = base_ipc * w_exc
     # Obtener variación intermensual
-    return varm_cpi_exc = varinterm(cpi_exc)
+    baseindex = (length(base.baseindex) == 1) ? base.baseindex : (base.baseindex' * w_exc)
+    mom_infl = varinterm(cpi_exc, baseindex)
+    return mom_infl
 end
 
 
