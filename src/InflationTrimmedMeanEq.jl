@@ -1,54 +1,41 @@
 """
     InflationTrimmedMeanEq <: InflationFunction
 
+    InflationTrimmedMeanEq(l1::Real,l2::Real)
+    InflationTrimmedMeanWeighted(factor_vec::Vector{<:Real})
+
 Función de inflación para computar la media truncada equiponderada
 
-## Utilización
-    function (inflfn::InflationTrimmedMeanEq)(base::VarCPIBase{T}) where T
-
-Define cómo opera InflationTrimmedMeanEq sobre un objeto de tipo VarCPIBase.
-
-### Ejemplo 
+# Ejemplo 
 ```julia-repl
 julia> mtfn = InflationTrimmedMeanEq(25, 75.5)
 (::InflationTrimmedMeanEq) (generic function with 5 methods)
-julia> mtfn(gt00) # gt00 es de tipo VarCPIBase
-120-element Vector{Float32}:
- 1.3350569
- 0.81459785
- 0.5427902
- 0.44377768
- 0.3310551
- 0.6161327
- ⋮
- 0.284297
- 0.20947386
- 0.298732
- 0.25540668
- 0.2260508
- 0.3456037
 ```
 """
 Base.@kwdef struct InflationTrimmedMeanEq <: InflationFunction
     l1::Float32
     l2::Float32
+    function InflationTrimmedMeanEq(l1::Real, l2::Real)
+        (l2 > l1) || error("Trimmed mean percentiles/quantiles should be in order, l1 < l2")
+        (l1 < 0 || l1 > 100 || l2 < 0 || l2 > 100) && error("Percentile/quantiles out of bounds")
+        # Check for percentiles / quantiles
+        if 0 < l1 < 1
+            l1 = Float32(100 * l1)
+        end
+        if 0 < l2 < 1
+            l2 = Float32(100 * l2)
+        end
+        return new(l1, l2)
+    end
 end
 
-
-# Métodos para crear funciones de inflación a partir de enteros
-"""
-    InflationTrimmedMeanEq(l1::Real,l2::Real)
-Nos permite utilizar recortes que no necesariamente son de tipos de punto flotante, como por ejemplo: enteros, fracciones, Float32 y Float64.
-
-# Ejemplo: 
-```julia-repl
-julia> mtfn = InflationTrimmedMeanEq(25, 75.5)
-(::InflationTrimmedMeanEq) (generic function with 5 methods)
-```
-"""
-function InflationTrimmedMeanEq(l1::Real, l2::Real)
-    # Obtener los recortes adecuados en tiempo de construcción
-    return InflationTrimmedMeanEq(Float32(l1), Float32(l2))
+# Método para recibir argumentos en forma de vector
+function InflationTrimmedMeanEq(factor_vec::Vector{T}) where {T}
+    length(factor_vec) != 2 && return @error "Dimensión incorrecta del vector"
+    return InflationTrimmedMeanEq(
+        convert(Float32, factor_vec[1]),
+        convert(Float32, factor_vec[2])
+    )
 end
 
 function measure_name(inflfn::InflationTrimmedMeanEq)
@@ -62,7 +49,6 @@ function measure_tag(inflfn::InflationTrimmedMeanEq)
     l1 = string(round(inflfn.l1, digits = 2))
     l2 = string(round(inflfn.l2, digits = 2))
     return "EqTM-(" * l1 * "," * l2 * ")"
-    #return "EQTM-(" * l1 * "," * l2 * ")"
 end
 
 
@@ -76,13 +62,11 @@ function (inflfn::InflationTrimmedMeanEq)(base::VarCPIBase{T}) where {T}
     # Obtener los percentiles de recorte
     l1 = inflfn.l1
     l2 = inflfn.l2
-    # l1 = min(inflfn.l1, inflfn.l2)
-    # l2 = max(inflfn.l1, inflfn.l2)
 
     # Determinamos en dónde truncar
     q1 = Int(ceil(length(base.w) * l1 / 100))
     q2 = Int(floor(length(base.w) * l2 / 100))
-    outVec = Vector{T}(undef, periods(base))
+    tm_mom = Vector{T}(undef, periods(base))
 
     if q1 == 0
         q1 = 1
@@ -104,23 +88,9 @@ function (inflfn::InflationTrimmedMeanEq)(base::VarCPIBase{T}) where {T}
 
         # Por lo que la siguiente operación es la de obtener el promedio entre
         # dichas posiciones, sin reservar nueva memoria
-        @inbounds outVec[i] = mean(@view sorted[q1:q2])
+        @inbounds tm_mom[i] = mean(@view sorted[q1:q2])
     end
-    return outVec
+    return tm_mom
 end
 
 
-# Método para recibir argumentos en forma de tupla
-InflationTrimmedMeanEq(factors::Tuple{Real, Real}) = InflationTrimmedMeanEq(
-    convert(Float32, factors[1]),
-    convert(Float32, factors[2])
-)
-
-# Método para recibir argumentos en forma de vector
-function InflationTrimmedMeanEq(factor_vec::Vector{<:Real})
-    length(factor_vec) != 2 && return @error "Dimensión incorrecta del vector"
-    return InflationTrimmedMeanEq(
-        convert(Float32, factor_vec[1]),
-        convert(Float32, factor_vec[2])
-    )
-end

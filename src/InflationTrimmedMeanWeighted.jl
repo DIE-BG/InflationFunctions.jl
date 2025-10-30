@@ -1,30 +1,43 @@
 """
     InflationTrimmedMeanWeighted <: InflationFunction
 
+    InflationTrimmedMeanWeighted(l1::Real, l2::Real)
+    InflationTrimmedMeanWeighted(factor_vec::Vector{<:Real})
+
 Función de inflación para computar la media truncada ponderada
 
-## Utilización
-    function (inflfn::InflationTrimmedMeanWeighted)(base::VarCPIBase{T}) where T
-
-Define cómo opera InflationTrimmedMeanWeighted sobre un objeto de tipo VarCPIBase.
-"""
-Base.@kwdef struct InflationTrimmedMeanWeighted <: InflationFunction
-    l1::Float32
-    l2::Float32
-end
-
-# Métodos para crear funciones de inflación a partir de enteros
-"""
-    InflationTrimmedMeanWeighted(l1::Real,l2::Real)
-Nos permite utilizar valores que no necesariamente son Float32, como enteros o Float64.
-
-# Ejemplo: 
+# Ejemplo
 ```julia-repl
 julia> mtfn = InflationTrimmedMeanWeighted(25,75.5)
 (::InflationTrimmedMeanWeighted) (generic function with 5 methods)
 ```
 """
-InflationTrimmedMeanWeighted(l1::Real, l2::Real) = InflationTrimmedMeanWeighted(l1 = Float32(l1), l2 = Float32(l2))
+Base.@kwdef struct InflationTrimmedMeanWeighted <: InflationFunction
+    l1::Float32
+    l2::Float32
+    function InflationTrimmedMeanWeighted(l1::Real, l2::Real)
+        (l2 > l1) || error("Trimmed mean percentiles/quantiles should be in order, l1 < l2")
+        (l1 < 0 || l1 > 100 || l2 < 0 || l2 > 100) && error("Percentile/quantiles out of bounds")
+        # Check for percentiles / quantiles
+        if 0 < l1 < 1
+            l1 = Float32(100 * l1)
+        end
+        if 0 < l2 < 1
+            l2 = Float32(100 * l2)
+        end
+        return new(l1, l2)
+    end
+end
+
+
+# Método para recibir argumentos en forma de vector
+function InflationTrimmedMeanWeighted(factor_vec::Vector{T}) where {T}
+    length(factor_vec) != 2 && return @error "Dimensión incorrecta del vector"
+    return InflationTrimmedMeanWeighted(
+        convert(T, factor_vec[1]),
+        convert(T, factor_vec[2])
+    )
+end
 
 function measure_name(inflfn::InflationTrimmedMeanWeighted)
     l1 = string(round(inflfn.l1, digits = 2))
@@ -48,29 +61,21 @@ CPIDataBase.params(inflfn::InflationTrimmedMeanWeighted) = (inflfn.l1, inflfn.l2
 function (inflfn::InflationTrimmedMeanWeighted)(base::VarCPIBase{T}) where {T}
     l1 = inflfn.l1
     l2 = inflfn.l2
-    # l1 = min(inflfn.l1, inflfn.l2)
-    # l2 = max(inflfn.l1, inflfn.l2)
-    outVec = Vector{T}(undef, periods(base))
+
+    tm_mom = Vector{T}(undef, periods(base))
+
     # para cada t: creamos parejas de variaciones con pesos,
     # ordenamos de acuerdo a variaciones, truncamos
     # renormalizamos para que los pesos sumen 1
     # sumamos el producto de variaciones con pesos
 
-    # Número de gastos básicos
-    g = size(base.v, 2)
-
     # Reservar la memoria para cómputos de media truncada
-    sort_ids = [zeros(Int, g) for _ in 1:Threads.nthreads()]
-    w_sorted_list = [zeros(T, g) for _ in 1:Threads.nthreads()]
-    w_sorted_renorm_list = [zeros(T, g) for _ in 1:Threads.nthreads()]
+    g = items(base)
+    sort_idx = zeros(Int, g)
+    w_sorted_acum = zeros(T, g)
+    w_sorted_renorm = zeros(T, g)
 
-    Threads.@threads for i in 1:periods(base)
-
-        # Obtener los vectores de cada hilo
-        j = Threads.threadid()
-        sort_idx = sort_ids[j]
-        w_sorted_acum = w_sorted_list[j]
-        w_sorted_renorm = w_sorted_renorm_list[j]
+    for i in 1:periods(base)
 
         # Obtener índices de orden en sort_idx
         v_month = @view base.v[i, :]
@@ -94,22 +99,8 @@ function (inflfn::InflationTrimmedMeanWeighted)(base::VarCPIBase{T}) where {T}
         w_sorted_renorm ./= sum(w_sorted_renorm)
 
         # Computar promedio ponderado de variaciones dentro de límites
-        @inbounds outVec[i] = sum((@view v_month[sort_idx]) .* w_sorted_renorm)
+        @inbounds tm_mom[i] = sum((@view v_month[sort_idx]) .* w_sorted_renorm)
     end
 
-    return outVec
-end
-# Método para recibir argumentos en forma de tupla
-InflationTrimmedMeanWeighted(factors::Tuple{Real, Real}) = InflationTrimmedMeanWeighted(
-    convert(Float32, factors[1]),
-    convert(Float32, factors[2])
-)
-
-# Método para recibir argumentos en forma de vector
-function InflationTrimmedMeanWeighted(factor_vec::Vector{<:Real})
-    length(factor_vec) != 2 && return @error "Dimensión incorrecta del vector"
-    return InflationTrimmedMeanWeighted(
-        convert(Float32, factor_vec[1]),
-        convert(Float32, factor_vec[2])
-    )
+    return tm_mom
 end
