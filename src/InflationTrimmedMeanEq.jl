@@ -30,12 +30,9 @@ Base.@kwdef struct InflationTrimmedMeanEq <: InflationFunction
 end
 
 # Método para recibir argumentos en forma de vector
-function InflationTrimmedMeanEq(factor_vec::Vector{T}) where {T}
+function InflationTrimmedMeanEq(factor_vec::Vector{T}) where {T <: Real}
     length(factor_vec) != 2 && return @error "Dimensión incorrecta del vector"
-    return InflationTrimmedMeanEq(
-        convert(Float32, factor_vec[1]),
-        convert(Float32, factor_vec[2])
-    )
+    return InflationTrimmedMeanEq(factor_vec...)
 end
 
 function measure_name(inflfn::InflationTrimmedMeanEq)

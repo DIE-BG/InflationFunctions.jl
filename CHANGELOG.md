@@ -1,11 +1,15 @@
 # Change Log 
 
+## [0.5.2] 2025-10
+
+### Fixed
+- `InflationTrimmedMeanWeighted`: Removed thread-parallelism for Julia 1.12. Refactored and validated main constructor.
+- `InflationTrimmedMeanEq`: Refactored and validated main constructor.
+
 ## [0.5.1] 2025-10
 
 ### Fixed
 - `InflationFixedExclusionCPI`: The aggregate base index was not being used to compute the month-on-month inflation for the fixed-exclusion method.
-- `InflationTrimmedMeanWeighted`: Removed thread-parallelism for Julia 1.12. Refactored and validated main constructor.
-- `InflationTrimmedMeanEq`: Refactored and validated main constructor.
 
 ## [0.5.0] 2025-10
 

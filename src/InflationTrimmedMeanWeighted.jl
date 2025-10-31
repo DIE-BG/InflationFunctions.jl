@@ -31,12 +31,9 @@ end
 
 
 # Método para recibir argumentos en forma de vector
-function InflationTrimmedMeanWeighted(factor_vec::Vector{T}) where {T}
+function InflationTrimmedMeanWeighted(factor_vec::Vector{T}) where {T <: Real}
     length(factor_vec) != 2 && return @error "Dimensión incorrecta del vector"
-    return InflationTrimmedMeanWeighted(
-        convert(T, factor_vec[1]),
-        convert(T, factor_vec[2])
-    )
+    return InflationTrimmedMeanWeighted(factor_vec...) 
 end
 
 function measure_name(inflfn::InflationTrimmedMeanWeighted)
