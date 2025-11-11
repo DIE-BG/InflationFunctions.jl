@@ -27,6 +27,16 @@ CPIDataGT.load_data()
             InflationCoreMaiF(GTDATA24, 10),
             InflationCoreMaiFG(GTDATA24, 10),
             InflationCoreMaiG(GTDATA24, 10),
+            # Legacy Mai functions
+            InflationFunctions.LegacyMai.InflationCoreMai(
+                InflationFunctions.LegacyMai.MaiF([0.0, 0.006287041634702409, 0.4763169240418438, 0.8411085012613978, 1.0])
+            ), 
+            InflationFunctions.LegacyMai.InflationCoreMai(
+                InflationFunctions.LegacyMai.MaiFG([0.0, 0.30007700254937775, 0.3806979438933833, 0.6592801609973685, 0.8572920039185152, 1.0])
+            ), 
+            InflationFunctions.LegacyMai.InflationCoreMai(
+                InflationFunctions.LegacyMai.MaiG([0.0, 0.2658236991960707, 0.5601153961330196, 0.8278967604925729, 1.0])
+            ),
         ]
         # test all InflationFunction objects for proper method_name and method_tag implementation
         for inflfn in inflation_functions

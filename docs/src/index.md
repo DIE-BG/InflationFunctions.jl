@@ -10,5 +10,5 @@ Documentation for [InflationFunctions](https://github.com/DIE-BG/InflationFuncti
 ```
 
 ```@autodocs
-Modules = [InflationFunctions]
+Modules = [InflationFunctions, InflationFunctions.LegacyMai]
 ```

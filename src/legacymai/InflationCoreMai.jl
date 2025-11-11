@@ -196,7 +196,8 @@ end
 InflationCoreMai(method::AbstractMaiMethod) = InflationCoreMai(V, method)
 
 # Nombre de la medida
-measure_name(inflfn::InflationCoreMai) = "MAI " * string(inflfn.method)
+CPIDataBase.measure_name(inflfn::InflationCoreMai) = "MAI " * string(inflfn.method)
+CPIDataBase.measure_tag(inflfn::InflationCoreMai) = CPIDataBase.measure_name(inflfn)
 
 # Parámetros
 CPIDataBase.params(inflfn::InflationCoreMai) = (inflfn.method,)

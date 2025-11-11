@@ -1,5 +1,16 @@
 # Change Log 
 
+## [0.5.3] 2025-11
+
+### Fixed
+- Inflation functions in the `LegacyMai` submodule did not overload the `measure_name` and `measure_tag` needed for simulations. 
+
+## [0.5.2] 2025-10
+
+### Fixed
+- `InflationTrimmedMeanWeighted`: Removed thread-parallelism for Julia 1.12. Refactored and validated main constructor.
+- `InflationTrimmedMeanEq`: Refactored and validated main constructor.
+
 ## [0.5.1] 2025-10
 
 ### Fixed
