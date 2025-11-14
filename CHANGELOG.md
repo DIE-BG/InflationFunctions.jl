@@ -4,6 +4,7 @@
 
 ### Fixed
 - Inflation functions in the `LegacyMai` submodule did not overload the `measure_name` and `measure_tag` needed for simulations. 
+- Removed the redefinition of `measure_name` to `InflationTotalCPI`.
 
 ## [0.5.2] 2025-10
 

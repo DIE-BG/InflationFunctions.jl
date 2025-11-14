@@ -1,8 +1,9 @@
 # Defines the set of available languages
 LANGUAGES = [:english, :spanish]
 
+# Bad practice
 # Redefine the measure_name for CPI inflation
-CPIDataBase.measure_name(::InflationTotalCPI) = MEASURE_NAMES[(LANGUAGE, :InflationTotalCPI)]
+# CPIDataBase.measure_name(::InflationTotalCPI) = MEASURE_NAMES[(LANGUAGE, :InflationTotalCPI)]
 
 """
     set_language!(language::Symbol)
