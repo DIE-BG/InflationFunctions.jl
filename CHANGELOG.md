@@ -4,6 +4,7 @@
 
 ### Fixed
 - Inflation functions in the `LegacyMai` submodule did not overload the `measure_name` and `measure_tag` needed for simulations. 
+- Efficient MAI functions errored under certain parameter configurations due to the special segment algorithm implemented in the `get_segments` function. Defaults were added to ensure the normalization algorithm works for any quantile vector specification.  
 - Removed the redefinition of `measure_name` to `InflationTotalCPI`.
 
 ## [0.5.2] 2025-10

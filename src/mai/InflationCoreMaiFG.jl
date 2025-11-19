@@ -21,8 +21,7 @@ struct InflationCoreMaiFG{T <: AbstractFloat} <: InflationCoreMai
         issorted(q) || error("Quantile vector should be ordered")
         all(0 .<= q .<= 1) || error("Quantile vector shuld have entries between 0 and 1")
         #Check that there are more than two segments
-        length(filter(x -> x >= 0.01 && x <= 0.99, q)) >= 2 ||
-            error("There should be at least three segments (at least two cut points between 0 and 1)")
+        length(q) >= 2 || error("There should be at least three segments (at least two cut points between 0 and 1)")
 
 
         # Sort vlp and glp accordingly
@@ -54,6 +53,6 @@ function (inflfn::InflationCoreMaiFG)(base::VarCPIBase{T}) where {T}
 end
 
 # Extend utility functions
-CPIDataBase.measure_name(inflfn::InflationCoreMaiFG) = MEASURE_NAMES[(LANGUAGE, :InflationCoreMaiG)] * _vecstr(inflfn.q)
+CPIDataBase.measure_name(inflfn::InflationCoreMaiFG) = MEASURE_NAMES[(LANGUAGE, :InflationCoreMaiFG)] * _vecstr(inflfn.q)
 CPIDataBase.measure_tag(inflfn::InflationCoreMaiFG) = "Mai-FG " * _vecstr(inflfn.q)
 CPIDataBase.params(inflfn::InflationCoreMaiFG) = (inflfn.vlp, inflfn.wlp, inflfn.q)

@@ -19,19 +19,18 @@ end
 
 # Computes the numbers of the special segment
 function get_segments(q_cp, q_lp)
+    K = length(q_lp) 
     # Obtener número de percentiles que conforman segmento especial en la
     # disribución de largo plazo
-    k̄ = findfirst(>(0), q_lp)
+    k̄ = something(findfirst(>(0), q_lp), K)
     k̲ = something(findlast(<(0), q_lp), 0)
-
     # Obtener número de percentiles que conforman segmento especial en la
     # disribución del mes o ventana
-    s̄ = findfirst(>(0), q_cp)
+    s̄ = something(findfirst(>(0), q_cp), K)
     s̲ = something(findlast(<(0), q_cp), 0)
     # Obtener los números comunes
     r̲ = min(k̲, s̲)
     r̄ = max(k̄, s̄)
-
     return r̲, r̄
 end
 
