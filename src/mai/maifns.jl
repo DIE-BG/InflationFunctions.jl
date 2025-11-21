@@ -1,10 +1,12 @@
 # Construct vlp and wlp from CountryStructure
-function historical_distr(cst::CountryStructure)
-
-    vlp = mapreduce(base -> vec(base.v), vcat, cst.base)
+function _historical_distr(cst::CountryStructure)
+    # Stack copies of all the monthly price changes into a big array
+    # Copies are used to avoid modifying the original in the ordering
+    vlp = mapreduce(base -> vec(copy(base.v)), vcat, cst.base)
     o = sortperm(vlp)
+    # Copies are needed because the big array is sorted in place
     sort!(vlp)
-
+    # Get the weights vector
     w = mapreduce(vcat, cst.base) do base
         T = periods(base)
         wb = repeat(base.w', T)

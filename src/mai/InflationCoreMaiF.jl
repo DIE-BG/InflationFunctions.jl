@@ -34,7 +34,7 @@ InflationCoreMaiF(cst::CountryStructure, n::Int) = InflationCoreMaiF(cst, collec
 # Define method to receive a CountryStructure and extract vlp and wlp
 InflationCoreMaiF(cst::CountryStructure, q::AbstractVector) = InflationCoreMaiF(cst, collect(q))
 function InflationCoreMaiF(cst::CountryStructure, q::Vector{<:AbstractFloat})
-    vlp, _ = historical_distr(cst)
+    vlp, _ = _historical_distr(cst)
     return InflationCoreMaiF(vlp, q)
 end
 
