@@ -16,20 +16,20 @@ Base.@kwdef struct InflationGSWeighted <: InflationFunction
     k::Float32
     s1::Float32
     s2::Float32
-    r::Int
+    r::Float32
+    function InflationGSEq(k::Real, s1::Real, s2::Real, r::Real)
+        k > 0 || error("Center quantile should be positive")
+        (s1 < 0 || s2 < 0) && error("Sides standard deviations should be positive")
+        (r > 0) || error("Smooothing power should be positive")
+        k = Float32(_percentiles2quantiles(k))
+        s1 = Float32(_percentiles2quantiles(s1))
+        s2 = Float32(_percentiles2quantiles(s2))
+        return new(k, s1, s2, r)
+    end
+
 end
 
-InflationGSWeighted(k::Real, s1::Real, s2::Real, r::Int = 2) = InflationGSWeighted(
-    k = Float32(_validate_param(k)),
-    s1 = Float32(_validate_param(s1)),
-    s2 = Float32(_validate_param(s2)),
-    r = r,
-)
-
-function InflationGSWeighted(params::Vector{<:Real}, r::Int = 2)
-    length(params) != 3 && error("Expected 3 parameters")
-    return InflationGSWeighted(convert.(Float32, params), r)
-end
+_percentiles2quantiles(x::Real) = x > 1 ? x / 100 : x
 
 function (inflfn::InflationGSWeighted)(base::VarCPIBase{T}) where {T}
     s1 = inflfn.s1
