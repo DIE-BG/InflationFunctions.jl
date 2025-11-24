@@ -71,7 +71,7 @@ Base.@kwdef struct InflationFixedExclusionCPI{N} <: InflationFunction
 end
 
 # Ampliación para que reciba solo los vectores, no necesariamente como una tupla.
-InflationFixedExclusionCPI(v_exc...) = InflationFixedExclusionCPI(v_exc)
+InflationFixedExclusionCPI(v_exc::Vararg{T}) where {T <: Vector{Int}} = InflationFixedExclusionCPI(v_exc)
 
 # Extender el método de nombre y de tag
 measure_name(inflfn::InflationFixedExclusionCPI) = MEASURE_NAMES[(LANGUAGE, :InflationFixedExclusion)] * string(map(length, inflfn.v_exc))
