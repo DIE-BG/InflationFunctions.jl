@@ -17,7 +17,7 @@ Base.@kwdef struct InflationGSWeighted <: InflationFunction
     s1::Float32
     s2::Float32
     r::Float32
-    function InflationGSEq(k::Real, s1::Real, s2::Real, r::Real)
+    function InflationGSWeighted(k::Real, s1::Real, s2::Real, r::Real)
         k > 0 || error("Center quantile should be positive")
         (s1 < 0 || s2 < 0) && error("Sides standard deviations should be positive")
         (r > 0) || error("Smooothing power should be positive")
