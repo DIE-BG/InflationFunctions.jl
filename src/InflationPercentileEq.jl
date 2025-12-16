@@ -71,44 +71,34 @@ julia>percEqfn(gtdata)
 Se obtienen los mismos resultados.
 """
 InflationPercentileEq(k::Int) = InflationPercentileEq(k = Float32(k) / 100)
-function InflationPercentileEq(q::T) where {T <: AbstractFloat} 
+function InflationPercentileEq(q::T) where {T <: AbstractFloat}
     q < 1.0 && return InflationPercentileEq(convert(Float32, q))
-    InflationPercentileEq(convert(Float32, q) / 100)
+    return InflationPercentileEq(convert(Float32, q) / 100)
 end
 
-"""
-    measure_name(inflfn::InflationPercentileEq)
-
-Indica qué medida se utiliza para una instancia de una función de inflación.
-
-# Ejemplo
-```julia-repl
-julia> percEqfn = InflationPercentileEq(0.70)
-julia> measure_name(percEqfn)
-"Percentil equiponderado 70.0"
-```
-"""
-measure_name(inflfn::InflationPercentileEq) = "Percentil equiponderado " * string(round(100inflfn.k, digits=2))
+measure_name(inflfn::InflationPercentileEq) = MEASURE_NAMES[(LANGUAGE, :InflationPercentileEq)] * string(round(100inflfn.k, digits = 2))
+#tag
+measure_tag(inflfn::InflationPercentileEq) = "EqPer-" * string(round(100inflfn.k, digits = 2))
 
 
 # Parámetro de la función de inflación
-params(inflfn::InflationPercentileEq) = (inflfn.k, )
+params(inflfn::InflationPercentileEq) = (inflfn.k,)
 
 # Las funciones sobre VarCPIBase resumen en variaciones intermensuales
-function (inflfn::InflationPercentileEq)(base::VarCPIBase{T}) where T 
+function (inflfn::InflationPercentileEq)(base::VarCPIBase{T}) where {T}
     # InflationPercentileEq k de la distribución de variaciones intermensuales
     k = inflfn.k
 
-    # Obtener el percentil k de la distribución intermensual 
+    # Obtener el percentil k de la distribución intermensual
     rows = size(base.v, 1)
-    
+
     k_interm = Vector{T}(undef, rows)
     Threads.@threads for r in 1:rows
         row = @view base.v[r, :]
         k_interm[r] = quantile(row, k)
     end
-    
-    k_interm
+
+    return k_interm
 end
 
 function InflationPercentileEq(vec::Vector{<:Real})
