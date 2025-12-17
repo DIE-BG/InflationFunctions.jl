@@ -1,5 +1,13 @@
 # Change Log 
 
+## [0.5.4] 2025-12
+
+### Fixed
+- Fixed warning of method redefinition in `InflationGaussianSmoothingWeighted.jl`. 
+    
+        WARNING: Method definition _percentiles2quantiles(Real) in module InflationFunctions at /home/runner/.julia/packages/InflationFunctions/Bcu5M/src/InflationGaussianSmoothingEq.jl:31 overwritten at /home/runner/.julia/packages/InflationFunctions/Bcu5M/src/InflationGaussianSmoothingWeighted.jl:32.
+
+
 ## [0.5.3] 2025-11
 
 ### Fixed

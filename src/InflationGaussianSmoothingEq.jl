@@ -28,6 +28,7 @@ Base.@kwdef struct InflationGSEq <: InflationFunction
     end
 end
 
+# Helper function to convert percentiles to quantiles if needed
 _percentiles2quantiles(x::Real) = x > 1 ? x / 100 : x
 
 function (inflfn::InflationGSEq)(base::VarCPIBase{T}) where {T}
