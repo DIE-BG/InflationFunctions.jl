@@ -16,7 +16,7 @@ using Dates
 import CPIDataBase: measure_name, measure_tag, params
 _vecstr(q) = "(" * join(string.(round.(q, digits = 2)), ",") * ")"
 
-## Dictionary with measure names in English and Spanish 
+## Dictionary with measure names in English and Spanish
 # This setting can be set by calling the set_language!(language) method
 # The default is English
 LANGUAGE = :english
@@ -103,6 +103,7 @@ include("InflationConstant.jl")
 
 ## Gaussian Smoothing
 export InflationGSEq, InflationGSWeighted
+_percentiles2quantiles(x::Real) = x > 1 ? x / 100 : x
 include("InflationGaussianSmoothingEq.jl")
 include("InflationGaussianSmoothingWeighted.jl")
 

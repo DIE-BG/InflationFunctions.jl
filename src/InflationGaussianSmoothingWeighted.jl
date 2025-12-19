@@ -29,8 +29,6 @@ Base.@kwdef struct InflationGSWeighted <: InflationFunction
 
 end
 
-_percentiles2quantiles(x::Real) = x > 1 ? x / 100 : x
-
 function (inflfn::InflationGSWeighted)(base::VarCPIBase{T}) where {T}
     s1 = inflfn.s1
     s2 = inflfn.s2
